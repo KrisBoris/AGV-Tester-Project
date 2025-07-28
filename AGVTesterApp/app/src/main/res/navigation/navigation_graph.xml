@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_graph"
+    app:startDestination="@id/startDriveFragment">
+
+    <fragment
+        android:id="@+id/startDriveFragment"
+        android:name="com.example.agvtesterapp.ui.fragments.StartDriveFragment"
+        android:label="StartDriveFragment"
+        tools:layout="@layout/fragment_start_drive" >
+        <action
+            android:id="@+id/action_startDriveFragment_to_steeringPanelFragment"
+            app:destination="@id/steeringPanelFragment"
+            app:enterAnim="@anim/slide_in_up"
+            app:exitAnim="@anim/slide_out_up"
+            app:popEnterAnim="@anim/slide_in_down"
+            app:popExitAnim="@anim/slide_out_down" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/steeringPanelFragment"
+        android:name="com.example.agvtesterapp.ui.fragments.SteeringPanelFragment"
+        android:label="SteeringPanelFragment"
+        tools:layout="@layout/fragment_steering_panel" />
+
+    <fragment
+        android:id="@+id/driveResultFragment"
+        android:name="com.example.agvtesterapp.ui.fragments.DriveResultFragment"
+        android:label="DriveResultFragment"
+        tools:layout="@layout/fragment_drive_result" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.agvtesterapp.ui.fragments.SettingsFragment"
+        android:label="SettingsFragment"
+        tools:layout="@layout/fragment_settings" />
+
+</navigation>

@@ -1,0 +1,41 @@
+package com.example.agvtesterapp.repository
+
+import android.content.Context
+import androidx.lifecycle.MutableLiveData
+import com.example.agvtesterapp.database.ResultsDatabase
+import com.example.agvtesterapp.models.DetectedObject
+import com.example.agvtesterapp.util.ConnectionStatus
+import com.example.agvtesterapp.util.SocketType
+import com.example.agvtesterapp.websocket.WebSocketClient
+
+class Repository(
+    private val context: Context,
+    private val db: ResultsDatabase,
+    private val sockets: Map<SocketType, WebSocketClient>
+) {
+    fun getSharedPrefsString(sharedPrefsKey: String, valueKey: String): String? {
+        val sharedPreferences = context.getSharedPreferences(sharedPrefsKey, Context.MODE_PRIVATE)
+
+        return sharedPreferences.getString(valueKey, null)
+    }
+
+    fun putSharedPrefsString(sharedPrefsKey: String, valueKey: String, value: String) {
+        val sharedPreferences = context.getSharedPreferences(sharedPrefsKey, Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
+        editor.putString(valueKey, value)
+        editor.apply()
+    }
+    suspend fun upsertResult(detectedObject: DetectedObject) = db.getResultsDAO().upsert(detectedObject)
+    fun getResults() = db.getResultsDAO().getResults()
+    suspend fun clearResults() = db.getResultsDAO().clearResults()
+
+    fun setConnectionStatusReceiver(socket: SocketType, receiver: MutableLiveData<ConnectionStatus>) =
+        sockets[socket]?.setConnectionStatusReceiver(receiver)
+    suspend fun connectSocket(socket: SocketType) = sockets[socket]?.connect()
+    suspend fun reconnectSocket(socket: SocketType) = sockets[socket]?.reconnect()
+    suspend fun disconnectSocket(socket: SocketType) = sockets[socket]?.disconnect()
+    suspend fun <T> setDataReceiver(socket: SocketType, receiver: MutableLiveData<T>) =
+        sockets[socket]?.setDataReceiver(receiver)
+    suspend fun sendSteeringCommand(socket: SocketType, message: String) = sockets[socket]?.send(message)
+}

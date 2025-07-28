@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AGVTesterApp</string>
+    <string name="agv_connection_status_connected">Connected</string>
+    <string name="agv_connection_status_disconnected">Disconnected</string>
+    <string name="agv_connection_status_error">Connection error</string>
+
+</resources>
