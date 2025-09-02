@@ -1,0 +1,2 @@
+agv_tester_bringup:websocket_servers
+-DPYTHON_EXECUTABLE=/usr/bin/python3 -DCATKIN_DEVEL_PREFIX=/home/jetson/agv_tester/devel -DCMAKE_INSTALL_PREFIX=/home/jetson/agv_tester/install -G Unix Makefiles

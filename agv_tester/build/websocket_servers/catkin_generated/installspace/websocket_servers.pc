@@ -1,0 +1,8 @@
+prefix=/home/jetson/agv_tester/install
+
+Name: websocket_servers
+Description: Description of websocket_servers
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

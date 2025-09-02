@@ -1,0 +1,9 @@
+<launch>
+
+    <include file="$(find darknet_ros)/launch/yolo_v3.launch"/>
+
+    <node pkg="websocket_servers" type="ws_srv_detected_objects_sender.py" name="ws_srv_detected_objects_receiver">
+        <rosparam command="load" file="$(find agv_tester_bringup)/config/detected_objects_sender.yaml"/>
+    </node>
+
+</launch>

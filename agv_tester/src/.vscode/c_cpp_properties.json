@@ -1,0 +1,27 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/jetson/darknet_ws/devel/include/**",
+        "/home/jetson/catkin_ws/devel/include/**",
+        "/opt/ros/melodic/include/**",
+        "/home/jetson/agv_catkin_ws/src/agv/include/**",
+        "/home/jetson/darknet_ws/src/yolov4-for-darknet_ros/darknet_ros/darknet_ros/include/**",
+        "/home/jetson/catkin_ws/src/gscam/include/**",
+        "/home/jetson/catkin_ws/src/jetracer_ros/include/**",
+        "/home/jetson/agv_tester/src/websocket_servers/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-arm64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

@@ -1,0 +1,9 @@
+<launch>
+
+    <include file="$(find jetracer)/launch/csi_camera.launch"/>
+
+    <node pkg="websocket_servers" type="ws_srv_camera_image_sender.py" name="ws_srv_camera_image_sender">
+        <rosparam command="load" file="$(find agv_tester_bringup)/config/camera_image_sender.yaml"/>
+    </node>
+
+</launch>

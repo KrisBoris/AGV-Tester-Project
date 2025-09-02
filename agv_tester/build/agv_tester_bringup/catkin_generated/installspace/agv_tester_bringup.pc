@@ -1,0 +1,8 @@
+prefix=/home/jetson/agv_tester/install
+
+Name: agv_tester_bringup
+Description: Description of agv_tester_bringup
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
