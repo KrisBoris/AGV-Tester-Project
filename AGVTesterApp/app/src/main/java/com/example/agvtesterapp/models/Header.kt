@@ -2,7 +2,8 @@ package com.example.agvtesterapp.models
 
 import java.io.Serializable
 
-data class SteeringCommand(
-    val linear: Float,
-    val angular: Float
+data class Header(
+    val seq: Int,
+    val stamp: Long,
+    val frameId: String
 ): Serializable

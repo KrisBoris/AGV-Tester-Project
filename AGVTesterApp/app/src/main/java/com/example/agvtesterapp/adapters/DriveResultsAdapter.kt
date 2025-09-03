@@ -28,14 +28,23 @@ class DriveResultsAdapter: RecyclerView.Adapter<DriveResultsAdapter.DetectedObje
         val detectedObject = detectedObjectsList[position]
 
         val objectName = holder.itemView.findViewById<TextView>(R.id.tvObjectName)
-        val objectTime = holder.itemView.findViewById<TextView>(R.id.tvObjectTime)
+        val objectCount = holder.itemView.findViewById<TextView>(R.id.tvObjectCount)
 
         objectName.text = detectedObject.name
-        objectTime.text = detectedObject.time
+        objectCount.text = detectedObject.count.toString()
     }
 
     fun addObject(obj: DetectedObject) {
         detectedObjectsList.add(obj)
+    }
+
+    fun addObjectsList(objectsList: ArrayList<DetectedObject>) {
+        detectedObjectsList.addAll(objectsList)
+    }
+
+    fun replaceObjectsList(objectsList: ArrayList<DetectedObject>) {
+        clearObjects()
+        addObjectsList(objectsList)
     }
 
     fun getObjets(): ArrayList<DetectedObject> = detectedObjectsList

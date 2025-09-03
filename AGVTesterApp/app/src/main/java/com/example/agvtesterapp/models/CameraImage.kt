@@ -3,6 +3,7 @@ package com.example.agvtesterapp.models
 import java.io.Serializable
 
 data class CameraImage(
+    val header: Header,
     val format: String,
-    val image: ByteArray
+    val data: ByteArray
 ): Serializable
