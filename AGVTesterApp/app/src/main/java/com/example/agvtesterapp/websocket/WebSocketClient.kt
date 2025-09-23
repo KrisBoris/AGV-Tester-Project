@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit
      private var socketStatus: MutableLiveData<ConnectionStatus>? = null
 ) {
     companion object {
-        const val IP_ADDRESS = "ws://10.0.2.2:8080"
+        const val IP_ADDRESS = "192.168.45.107"
         const val WEBSOCKET_TAG = "WEBSOCKET_TAG"
         const val PING_INTERVAL = 40L   // 25 FPS
         const val RECONNECT_DELAY = 3_000L

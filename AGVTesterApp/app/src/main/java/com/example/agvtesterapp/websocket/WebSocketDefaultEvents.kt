@@ -3,8 +3,11 @@ package com.example.agvtesterapp.websocket
 import android.graphics.BitmapFactory
 import android.util.Base64
 import androidx.lifecycle.MutableLiveData
+import com.example.agvtesterapp.models.CameraImage
 import com.example.agvtesterapp.models.DetectedObject
 import com.example.agvtesterapp.util.ConnectionStatus
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 class WebSocketDefaultEvents: WebSocketEvents {
     override fun onConnected(socketStatus: MutableLiveData<ConnectionStatus>) {
@@ -12,7 +15,13 @@ class WebSocketDefaultEvents: WebSocketEvents {
     }
 
     override fun <T> onReceiveCameraImage(data: String, dataContainer: MutableLiveData<T>) {
-        val decodedBytes = Base64.decode(data, Base64.DEFAULT)
+        // Parsing JSON data into CameraImage object
+        val cameraImage = Gson().fromJson(data, CameraImage::class.java)
+
+        // Decoding Base64-encoded image to bytes (ByteArray)
+        val decodedBytes = Base64.decode(cameraImage.data, Base64.DEFAULT)
+
+        // Converting raw bytes to a Bitmap (for the UI)
         val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
 
         @Suppress("UNCHECKED_CAST")
@@ -20,12 +29,23 @@ class WebSocketDefaultEvents: WebSocketEvents {
     }
 
     override fun <T> onReceiveDetectedObject(data: String, dataContainer: MutableLiveData<T>) {
-        // add converter later
 
-        val detectedObject = DetectedObject(0, "k", "k")
+        val mapType = object : TypeToken<Map<String, Any>>() {}.type
+        val detectedObjects: Map<String, Any> = Gson().fromJson(data, mapType)
+        val list = (dataContainer.value as? MutableList<DetectedObject>) ?: mutableListOf() // Add safe cast
 
-        val list = dataContainer.value as MutableList<Any>
-        list.add(detectedObject)
+        for ((name, count) in detectedObjects) {
+            val countInt = (count as? Int)?.toInt() ?: 0
+            val existingObj = list.find {it.name == name}
+
+            if (existingObj != null) {
+                if (countInt > existingObj.count)
+                   existingObj.count = countInt
+            }
+            else {
+                list.add(DetectedObject(name = name, count = countInt))
+            }
+        }
 
         @Suppress("UNCHECKED_CAST")
         dataContainer.postValue(list as T)

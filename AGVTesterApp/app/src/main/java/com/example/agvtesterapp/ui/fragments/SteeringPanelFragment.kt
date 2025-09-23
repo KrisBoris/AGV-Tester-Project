@@ -3,14 +3,11 @@ package com.example.agvtesterapp.ui.fragments
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.agvtesterapp.R
 import com.example.agvtesterapp.databinding.FragmentSteeringPanelBinding
@@ -57,10 +54,10 @@ class SteeringPanelFragment : Fragment(R.layout.fragment_steering_panel) {
                 viewModel.reconnectSocket(SocketType.DETECTED_OBJECTS)
                 viewModel.reconnectSocket(SocketType.CAMERA_IMAGE)
 
-                if(viewModel.detectedObjects.value != null) {
-                    for(detectedObject in viewModel.detectedObjects.value!!)
-                        viewModel.addDetectedObject(detectedObject)
-                }
+//                if(viewModel.detectedObjectsK.value != null) {
+//                    for(detectedObject in viewModel.detectedObjectsK.value!!)
+//                        viewModel.addDetectedObject(detectedObject)
+//                }
 
                 findNavController().popBackStack()
             }

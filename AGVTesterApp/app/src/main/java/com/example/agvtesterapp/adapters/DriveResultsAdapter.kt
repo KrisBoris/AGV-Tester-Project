@@ -6,13 +6,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.agvtesterapp.R
-import com.example.agvtesterapp.models.DetectedObject
+import com.example.agvtesterapp.models.DetectedObjects
 
 class DriveResultsAdapter: RecyclerView.Adapter<DriveResultsAdapter.DetectedObjectViewHolder>() {
 
     inner class DetectedObjectViewHolder(itemView: View): RecyclerView.ViewHolder(itemView)
 
-    private val detectedObjectsList: ArrayList<DetectedObject> = ArrayList()
+    private val detectedObjectsListK: ArrayList<DetectedObjects> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DetectedObjectViewHolder {
         return DetectedObjectViewHolder(
@@ -21,11 +21,11 @@ class DriveResultsAdapter: RecyclerView.Adapter<DriveResultsAdapter.DetectedObje
     }
 
     override fun getItemCount(): Int {
-        return detectedObjectsList.size
+        return detectedObjectsListK.size
     }
 
     override fun onBindViewHolder(holder: DetectedObjectViewHolder, position: Int) {
-        val detectedObject = detectedObjectsList[position]
+        val detectedObject = detectedObjectsListK[position]
 
         val objectName = holder.itemView.findViewById<TextView>(R.id.tvObjectName)
         val objectCount = holder.itemView.findViewById<TextView>(R.id.tvObjectCount)
@@ -34,22 +34,22 @@ class DriveResultsAdapter: RecyclerView.Adapter<DriveResultsAdapter.DetectedObje
         objectCount.text = detectedObject.count.toString()
     }
 
-    fun addObject(obj: DetectedObject) {
-        detectedObjectsList.add(obj)
+    fun addObject(obj: DetectedObjects) {
+        detectedObjectsListK.add(obj)
     }
 
-    fun addObjectsList(objectsList: ArrayList<DetectedObject>) {
-        detectedObjectsList.addAll(objectsList)
+    fun addObjectsList(objectsList: ArrayList<DetectedObjects>) {
+        detectedObjectsListK.addAll(objectsList)
     }
 
-    fun replaceObjectsList(objectsList: ArrayList<DetectedObject>) {
+    fun replaceObjectsList(objectsList: ArrayList<DetectedObjects>) {
         clearObjects()
         addObjectsList(objectsList)
     }
 
-    fun getObjets(): ArrayList<DetectedObject> = detectedObjectsList
+    fun getObjets(): ArrayList<DetectedObjects> = detectedObjectsListK
 
     fun clearObjects() {
-        detectedObjectsList.clear()
+        detectedObjectsListK.clear()
     }
 }

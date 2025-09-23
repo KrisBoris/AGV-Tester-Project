@@ -33,9 +33,9 @@ class MainActivity : AppCompatActivity() {
         val repository = Repository(applicationContext,
             ResultsDatabase(this),
             mapOf(
-                SocketType.DETECTED_OBJECTS to WebSocketClient("${WebSocketClient.IP_ADDRESS}/detected_objects_controller"),
-                SocketType.CAMERA_IMAGE to WebSocketClient("${WebSocketClient.IP_ADDRESS}/camera_image_controller"),
-                SocketType.STEERING to WebSocketClient("${WebSocketClient.IP_ADDRESS}/steering_controller")
+                SocketType.CAMERA_IMAGE to WebSocketClient("${WebSocketClient.IP_ADDRESS}:7891"),
+                SocketType.DETECTED_OBJECTS to WebSocketClient("${WebSocketClient.IP_ADDRESS}:7892"),
+                SocketType.STEERING to WebSocketClient("${WebSocketClient.IP_ADDRESS}:7893")
             )
         )
 

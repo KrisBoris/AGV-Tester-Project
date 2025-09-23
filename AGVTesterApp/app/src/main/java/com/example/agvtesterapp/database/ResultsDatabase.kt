@@ -4,10 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.agvtesterapp.models.DetectedObject
+import com.example.agvtesterapp.models.DetectedObjects
 
 @Database(
-    entities = [DetectedObject::class],
+    entities = [DetectedObjects::class],
     version = 1
 )
 

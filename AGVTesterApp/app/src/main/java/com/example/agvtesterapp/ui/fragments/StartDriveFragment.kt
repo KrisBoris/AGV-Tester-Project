@@ -47,7 +47,7 @@ class StartDriveFragment : Fragment(R.layout.fragment_start_drive) {
                 if(viewModel.socketsStatus[SocketType.DETECTED_OBJECTS]?.value is ConnectionStatus.Connected) {
 
                     // Start receiving data from server (detected objects and camera image)
-                    viewModel.setDataReceiver(SocketType.DETECTED_OBJECTS, viewModel.detectedObjects)
+                    viewModel.setDataReceiver(SocketType.DETECTED_OBJECTS, viewModel.detectedObjectsK)
                     viewModel.setDataReceiver(SocketType.CAMERA_IMAGE, viewModel.cameraImage)
 
                     findNavController().navigate(R.id.action_startDriveFragment_to_steeringPanelFragment)
