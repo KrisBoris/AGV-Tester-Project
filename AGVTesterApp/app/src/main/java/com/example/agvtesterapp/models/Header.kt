@@ -4,6 +4,6 @@ import java.io.Serializable
 
 data class Header(
     val seq: Int,
-    val stamp: Long,
+    val stamp: Double,
     val frameId: String
 ): Serializable

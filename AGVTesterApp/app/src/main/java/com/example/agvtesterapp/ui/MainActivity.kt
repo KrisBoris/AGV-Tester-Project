@@ -2,6 +2,7 @@ package com.example.agvtesterapp.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -50,8 +51,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun connectAllSockets() {
-        for(socket in SocketType.entries)
-            viewModel.connectSocket(socket)
+        viewModel.connectSocket(SocketType.CAMERA_IMAGE, viewModel.cameraImage)
+        viewModel.connectSocket(SocketType.DETECTED_OBJECTS, viewModel.detectedObjects)
+        viewModel.connectSocket(SocketType.STEERING, MutableLiveData(Int))  // Pass something random to make him shut up (deleted this comment later)
     }
 
     override fun onDestroy() {

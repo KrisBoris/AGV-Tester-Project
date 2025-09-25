@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.agvtesterapp.models.DetectedObject
 import com.example.agvtesterapp.models.DetectedObjects
+import com.example.agvtesterapp.models.Twist
 import com.example.agvtesterapp.repository.Repository
 import com.example.agvtesterapp.util.ConnectionStatus
 import com.example.agvtesterapp.util.SocketType
@@ -17,7 +18,7 @@ class ViewModel(app: Application, val repository: Repository): AndroidViewModel(
 
     var socketsStatus: Map<SocketType, MutableLiveData<ConnectionStatus>>
 
-    val detectedObjectsK: MutableLiveData<MutableList<DetectedObject>> = MutableLiveData()
+    val detectedObjects: MutableLiveData<MutableList<DetectedObject>> = MutableLiveData()
     val cameraImage: MutableLiveData<Bitmap> = MutableLiveData()
 
     // Shared preferences
@@ -69,11 +70,11 @@ class ViewModel(app: Application, val repository: Repository): AndroidViewModel(
 
     fun setConnectionStatusReceiver(socket: SocketType, receiver: MutableLiveData<ConnectionStatus>) =
         repository.setConnectionStatusReceiver(socket, receiver)
-    fun connectSocket(socket: SocketType) = viewModelScope.launch {
-        repository.connectSocket(socket)
+    fun <T> connectSocket(socket: SocketType, dataReceiver: MutableLiveData<T>? = null) = viewModelScope.launch {
+        repository.connectSocket(socket, dataReceiver)
     }
-    fun reconnectSocket(socket: SocketType) = viewModelScope.launch {
-        repository.reconnectSocket(socket)
+    fun <T> reconnectSocket(socket: SocketType, dataReceiver: MutableLiveData<T>? = null) = viewModelScope.launch {
+        repository.reconnectSocket(socket, dataReceiver)
     }
     fun disconnectSocket(socket: SocketType) = viewModelScope.launch {
         repository.disconnectSocket(socket)
@@ -81,7 +82,7 @@ class ViewModel(app: Application, val repository: Repository): AndroidViewModel(
     fun <T> setDataReceiver(socket: SocketType, receiver: MutableLiveData<T>) = viewModelScope.launch {
         repository.setDataReceiver(socket, receiver)
     }
-    fun sendSteeringCommand(socket: SocketType, message: String) = viewModelScope.launch {
-        repository.sendSteeringCommand(socket, message)
+    fun sendSteeringCommand(socket: SocketType, cmd: Twist) = viewModelScope.launch {
+        repository.sendSteeringCommand(socket, cmd)
     }
 }

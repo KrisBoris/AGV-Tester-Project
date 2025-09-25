@@ -2,6 +2,7 @@ package com.example.agvtesterapp.websocket
 
 import android.graphics.BitmapFactory
 import android.util.Base64
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.agvtesterapp.models.CameraImage
 import com.example.agvtesterapp.models.DetectedObject
@@ -26,6 +27,8 @@ class WebSocketDefaultEvents: WebSocketEvents {
 
         @Suppress("UNCHECKED_CAST")
         dataContainer.postValue(bitmap as T)
+
+        Log.d(WebSocketClient.WEBSOCKET_TAG, "Image received")
     }
 
     override fun <T> onReceiveDetectedObject(data: String, dataContainer: MutableLiveData<T>) {

@@ -11,6 +11,8 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.agvtesterapp.R
 import com.example.agvtesterapp.databinding.FragmentSteeringPanelBinding
+import com.example.agvtesterapp.models.Twist
+import com.example.agvtesterapp.models.Vector3
 import com.example.agvtesterapp.ui.MainActivity
 import com.example.agvtesterapp.ui.ViewModel
 import com.example.agvtesterapp.util.SocketType
@@ -38,21 +40,19 @@ class SteeringPanelFragment : Fragment(R.layout.fragment_steering_panel) {
             val scope = CoroutineScope(Dispatchers.IO) + SupervisorJob() + CoroutineExceptionHandler {_, throwable ->
                 Log.d(WebSocketClient.WEBSOCKET_TAG, "Error: ${throwable.message}")}
 
-            scope.launch {
-                viewModel.cameraImage.observe(viewLifecycleOwner, Observer { image ->
-                    agvImageView.setImageBitmap(image)
-                })
-            }
+            viewModel.cameraImage.observe(viewLifecycleOwner, Observer { image ->
+                agvImageView.setImageBitmap(image)
+            })
 
-            setButtonOnTouchListener(btnForward, scope, "fwd")
-            setButtonOnTouchListener(btnLeft, scope, "lft")
-            setButtonOnTouchListener(btnBackward, scope, "rgt")
-            setButtonOnTouchListener(btnRight, scope, "bwd")
+            setButtonOnTouchListener(btnForward, scope, Twist(Vector3(0.0, 0.0, 1.0), Vector3(0.0, 0.0, 0.0)))
+            setButtonOnTouchListener(btnLeft, scope, Twist(Vector3(0.0, 0.0, 0.3), Vector3(0.0, 0.0, 0.7)))
+            setButtonOnTouchListener(btnBackward, scope, Twist(Vector3(0.0, 0.0, -1.0), Vector3(0.0, 0.0, 0.0)))
+            setButtonOnTouchListener(btnRight, scope, Twist(Vector3(0.0, 0.0, 0.3), Vector3(0.0, 0.0, -0.7)))
 
             btnFinish.setOnClickListener {
 
-                viewModel.reconnectSocket(SocketType.DETECTED_OBJECTS)
-                viewModel.reconnectSocket(SocketType.CAMERA_IMAGE)
+//                viewModel.reconnectSocket(SocketType.DETECTED_OBJECTS)
+//                viewModel.reconnectSocket(SocketType.CAMERA_IMAGE)
 
 //                if(viewModel.detectedObjectsK.value != null) {
 //                    for(detectedObject in viewModel.detectedObjectsK.value!!)
@@ -65,18 +65,18 @@ class SteeringPanelFragment : Fragment(R.layout.fragment_steering_panel) {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private fun setButtonOnTouchListener(button: Button, scope: CoroutineScope, message: String) {
+    private fun setButtonOnTouchListener(button: Button, scope: CoroutineScope, cmd: Twist) {
         button.setOnTouchListener { view, event ->
             when (event?.action) {
                 MotionEvent.ACTION_DOWN -> {
                     scope.launch {
-                        viewModel.sendSteeringCommand(SocketType.STEERING, "/$message")
+                        viewModel.sendSteeringCommand(SocketType.STEERING, cmd)
                     }
                 }
 
                 MotionEvent.ACTION_UP -> {
                     scope.launch {
-                        viewModel.sendSteeringCommand(SocketType.STEERING, "/stp")
+                        viewModel.sendSteeringCommand(SocketType.STEERING, Twist(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0)))
                     }
                 }
             }
