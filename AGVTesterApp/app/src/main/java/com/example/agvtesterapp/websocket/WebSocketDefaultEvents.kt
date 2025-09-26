@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.agvtesterapp.models.CameraImage
 import com.example.agvtesterapp.models.DetectedObject
+import com.example.agvtesterapp.models.Image
 import com.example.agvtesterapp.util.ConnectionStatus
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -17,13 +18,19 @@ class WebSocketDefaultEvents: WebSocketEvents {
 
     override fun <T> onReceiveCameraImage(data: String, dataContainer: MutableLiveData<T>) {
         // Parsing JSON data into CameraImage object
-        val cameraImage = Gson().fromJson(data, CameraImage::class.java)
+//        val cameraImage = Gson().fromJson(data, CameraImage::class.java)
+//
+//        // Decoding Base64-encoded image to bytes (ByteArray)
+//        val decodedBytes = Base64.decode(cameraImage.data, Base64.DEFAULT)
+//
+//        // Converting raw bytes to a Bitmap (for the UI)
+//        val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
 
-        // Decoding Base64-encoded image to bytes (ByteArray)
+        // ----------------------- Testing -----------------------------
+        val cameraImage = Gson().fromJson(data, Image::class.java)
         val decodedBytes = Base64.decode(cameraImage.data, Base64.DEFAULT)
-
-        // Converting raw bytes to a Bitmap (for the UI)
         val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+        // ----------------------- Testing -----------------------------
 
         @Suppress("UNCHECKED_CAST")
         dataContainer.postValue(bitmap as T)

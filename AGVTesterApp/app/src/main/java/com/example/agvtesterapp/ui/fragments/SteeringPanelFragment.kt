@@ -44,10 +44,10 @@ class SteeringPanelFragment : Fragment(R.layout.fragment_steering_panel) {
                 agvImageView.setImageBitmap(image)
             })
 
-            setButtonOnTouchListener(btnForward, scope, Twist(Vector3(0.0, 0.0, 1.0), Vector3(0.0, 0.0, 0.0)))
-            setButtonOnTouchListener(btnLeft, scope, Twist(Vector3(0.0, 0.0, 0.3), Vector3(0.0, 0.0, 0.7)))
-            setButtonOnTouchListener(btnBackward, scope, Twist(Vector3(0.0, 0.0, -1.0), Vector3(0.0, 0.0, 0.0)))
-            setButtonOnTouchListener(btnRight, scope, Twist(Vector3(0.0, 0.0, 0.3), Vector3(0.0, 0.0, -0.7)))
+            setButtonOnTouchListener(btnForward, scope, Twist(Vector3(1.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0)))
+            setButtonOnTouchListener(btnLeft, scope, Twist(Vector3(0.3, 0.0, 0.0), Vector3(0.0, 0.0, 0.7)))
+            setButtonOnTouchListener(btnBackward, scope, Twist(Vector3(-1.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0)))
+            setButtonOnTouchListener(btnRight, scope, Twist(Vector3(0.3, 0.0, 0.0), Vector3(0.0, 0.0, -0.7)))
 
             btnFinish.setOnClickListener {
 
@@ -70,12 +70,18 @@ class SteeringPanelFragment : Fragment(R.layout.fragment_steering_panel) {
             when (event?.action) {
                 MotionEvent.ACTION_DOWN -> {
                     scope.launch {
-                        viewModel.sendSteeringCommand(SocketType.STEERING, cmd)
+                        while (button.isPressed) {
+                            viewModel.sendSteeringCommand(SocketType.STEERING, cmd)
+                            // Sends the steering command every 50ms
+                            // It is imperative for ROS to receive the command frequently, otherwise it will stop the vehicle
+                            kotlinx.coroutines.delay(50)
+                        }
                     }
                 }
 
                 MotionEvent.ACTION_UP -> {
                     scope.launch {
+                        // Stops the vehicle immediately after releasing the button
                         viewModel.sendSteeringCommand(SocketType.STEERING, Twist(Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0)))
                     }
                 }
