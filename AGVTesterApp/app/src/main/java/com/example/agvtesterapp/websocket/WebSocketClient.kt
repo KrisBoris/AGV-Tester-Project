@@ -34,10 +34,10 @@ import java.util.concurrent.TimeUnit
      private var socketStatus: MutableLiveData<ConnectionStatus>? = null
 ) {
     companion object {
-        const val IP_ADDRESS = "ws://192.168.45.210"
+        const val IP_ADDRESS = "ws://192.168.45.15"
         const val WEBSOCKET_TAG = "WEBSOCKET_TAG"
         const val PING_INTERVAL = 10_000L   // 10s
-        const val RECONNECT_DELAY = 3_000L
+        const val RECONNECT_DELAY = 5_000L
         const val RECONNECTION_ATTEMPTS = 3
     }
 
@@ -75,14 +75,27 @@ import java.util.concurrent.TimeUnit
                 else -> null
             }
 
-            session?.incoming
-                ?.receiveAsFlow()
-                ?.filterIsInstance<Frame.Text>()
-                ?.collect { data ->
-                    val message = data.readText()
-                    onReceive?.invoke(message, dataReceiver)
-                    Log.d(WEBSOCKET_TAG, "Raw message: $message")
-                }
+            try {
+                session?.incoming
+                    ?.receiveAsFlow()
+                    ?.filterIsInstance<Frame.Text>()
+                    ?.collect { data ->
+                        val message = data.readText()
+                        onReceive?.invoke(message, dataReceiver)
+                        Log.d(WEBSOCKET_TAG, "Raw message: $message")
+                    }
+
+                // Flow finished normally (server closed connection gracefully)
+                socketStatus?.let { listener.onDisconnected(it, "Server closed connection") }
+            }
+            catch (e: Exception) {
+                // Exception usually means server disconnected unexpectedly
+                Log.e(WEBSOCKET_TAG, "WebSocket error: ${e.message}")
+                socketStatus?.let { listener.onDisconnected(it, "Server disconnected: ${e.message}") }
+            }
+            finally {
+                Log.d(WEBSOCKET_TAG, "WebSocket listener stopped")
+            }
         }
     }
 

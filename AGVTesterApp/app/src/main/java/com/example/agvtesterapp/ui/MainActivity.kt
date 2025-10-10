@@ -34,9 +34,9 @@ class MainActivity : AppCompatActivity() {
         val repository = Repository(applicationContext,
             ResultsDatabase(this),
             mapOf(
-                SocketType.CAMERA_IMAGE to WebSocketClient("${WebSocketClient.IP_ADDRESS}:7891"),
-                SocketType.DETECTED_OBJECTS to WebSocketClient("${WebSocketClient.IP_ADDRESS}:7892"),
-                SocketType.STEERING to WebSocketClient("${WebSocketClient.IP_ADDRESS}:7893")
+                SocketType.CAMERA_IMAGE to WebSocketClient("${viewModel.getIpAddress()}:7891"),
+                SocketType.DETECTED_OBJECTS to WebSocketClient("${viewModel.getIpAddress()}:7892"),
+                SocketType.STEERING to WebSocketClient("${viewModel.getIpAddress()}:7893")
             )
         )
 
@@ -59,11 +59,6 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
-        disconnectAllSockets()
-    }
-
-    private fun disconnectAllSockets() {
-        for(socket in SocketType.entries)
-            viewModel.disconnectSocket(socket)
+        viewModel.disconnectAllSockets()
     }
 }
