@@ -7,7 +7,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.agvtesterapp.R
 import com.example.agvtesterapp.databinding.FragmentSteeringPanelBinding
@@ -29,6 +28,11 @@ class SteeringPanelFragment : Fragment(R.layout.fragment_steering_panel) {
     private lateinit var binding: FragmentSteeringPanelBinding
     private lateinit var viewModel: ViewModel
 
+    private val forwardVelocity = Twist(Vector3(0.7, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
+    private val backwardVelocity = Twist(Vector3(-0.7, 0.0, 0.0), Vector3(0.0, 0.0, 0.0))
+    private val leftTurnVelocity = Twist(Vector3(0.3, 0.0, 0.0), Vector3(0.0, 0.0, 1.0))
+    private val rightTurnVelocity = Twist(Vector3(0.3, 0.0, 0.0), Vector3(0.0, 0.0, -1.0))
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentSteeringPanelBinding.bind(view)
@@ -40,19 +44,21 @@ class SteeringPanelFragment : Fragment(R.layout.fragment_steering_panel) {
             val scope = CoroutineScope(Dispatchers.IO) + SupervisorJob() + CoroutineExceptionHandler {_, throwable ->
                 Log.d(WebSocketClient.WEBSOCKET_TAG, "Error: ${throwable.message}")}
 
-            viewModel.cameraImage.observe(viewLifecycleOwner, Observer { image ->
+            viewModel.cameraImage.observe(viewLifecycleOwner) { image ->
                 agvImageView.setImageBitmap(image)
-            })
+            }
 
-            setButtonOnTouchListener(btnForward, scope, Twist(Vector3(1.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0)))
-            setButtonOnTouchListener(btnLeft, scope, Twist(Vector3(0.3, 0.0, 0.0), Vector3(0.0, 0.0, 0.7)))
-            setButtonOnTouchListener(btnBackward, scope, Twist(Vector3(-1.0, 0.0, 0.0), Vector3(0.0, 0.0, 0.0)))
-            setButtonOnTouchListener(btnRight, scope, Twist(Vector3(0.3, 0.0, 0.0), Vector3(0.0, 0.0, -0.7)))
+            setButtonOnTouchListener(btnForward, scope, forwardVelocity)
+            setButtonOnTouchListener(btnBackward, scope, backwardVelocity)
+            setButtonOnTouchListener(btnLeft, scope, leftTurnVelocity)
+            setButtonOnTouchListener(btnRight, scope, rightTurnVelocity)
 
             btnFinish.setOnClickListener {
 
-//                viewModel.reconnectSocket(SocketType.DETECTED_OBJECTS)
-//                viewModel.reconnectSocket(SocketType.CAMERA_IMAGE)
+                // Move detected objects from viewModel LiveData to database
+                for (detectedObject in viewModel.detectedObjects.value!!) {
+                    viewModel.addDetectedObject(detectedObject)
+                }
 
 //                if(viewModel.detectedObjectsK.value != null) {
 //                    for(detectedObject in viewModel.detectedObjectsK.value!!)

@@ -3,7 +3,7 @@ package com.example.agvtesterapp.repository
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.example.agvtesterapp.database.ResultsDatabase
-import com.example.agvtesterapp.models.DetectedObjects
+import com.example.agvtesterapp.models.DetectedObject
 import com.example.agvtesterapp.models.Twist
 import com.example.agvtesterapp.util.ConnectionStatus
 import com.example.agvtesterapp.util.SocketType
@@ -27,7 +27,7 @@ class Repository(
         editor.putString(valueKey, value)
         editor.apply()
     }
-    suspend fun upsertResult(detectedObjects: DetectedObjects) = db.getResultsDAO().upsert(detectedObjects)
+    suspend fun upsertResult(detectedObject: DetectedObject) = db.getResultsDAO().upsert(detectedObject)
     fun getResults() = db.getResultsDAO().getResults()
     suspend fun clearResults() = db.getResultsDAO().clearResults()
 

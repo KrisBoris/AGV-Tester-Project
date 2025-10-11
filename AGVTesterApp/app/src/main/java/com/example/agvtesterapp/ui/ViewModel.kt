@@ -2,13 +2,10 @@ package com.example.agvtesterapp.ui
 
 import android.app.Application
 import android.graphics.Bitmap
-import android.net.InetAddresses
-import android.util.Patterns
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.agvtesterapp.models.DetectedObject
-import com.example.agvtesterapp.models.DetectedObjects
 import com.example.agvtesterapp.models.Twist
 import com.example.agvtesterapp.repository.Repository
 import com.example.agvtesterapp.util.ConnectionStatus
@@ -16,8 +13,6 @@ import com.example.agvtesterapp.util.SocketType
 import com.example.agvtesterapp.websocket.WebSocketClient
 import kotlinx.coroutines.launch
 import org.apache.commons.validator.routines.InetAddressValidator
-import java.net.Inet4Address
-import java.net.InetAddress
 
 class ViewModel(app: Application, val repository: Repository): AndroidViewModel(app) {
 
@@ -42,6 +37,8 @@ class ViewModel(app: Application, val repository: Repository): AndroidViewModel(
 
         for(socket in SocketType.entries)
             setConnectionStatusReceiver(socket, socketsStatus[socket]!!)
+
+        detectedObjects.value = mutableListOf()
     }
 
     private fun getSharedPrefsString(sharedPrefsKey: String, valueKey: String): String? =
@@ -63,8 +60,8 @@ class ViewModel(app: Application, val repository: Repository): AndroidViewModel(
             false
     }
 
-    fun addDetectedObject(detectedObjects: DetectedObjects) = viewModelScope.launch {
-        repository.upsertResult(detectedObjects)
+    fun addDetectedObject(detectedObject: DetectedObject) = viewModelScope.launch {
+        repository.upsertResult(detectedObject)
     }
 
     fun getResults() = repository.getResults()
