@@ -4,6 +4,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.agvtesterapp.R
 import com.example.agvtesterapp.models.DetectedObject
@@ -11,6 +13,19 @@ import com.example.agvtesterapp.models.DetectedObject
 class DriveResultsAdapter: RecyclerView.Adapter<DriveResultsAdapter.DetectedObjectViewHolder>() {
 
     inner class DetectedObjectViewHolder(itemView: View): RecyclerView.ViewHolder(itemView)
+
+    private val differCallback = object : DiffUtil.ItemCallback<DetectedObject>() {
+
+        override fun areItemsTheSame(oldItem: DetectedObject, newItem: DetectedObject): Boolean {
+            return oldItem.name == newItem.name
+        }
+
+        override fun areContentsTheSame(oldItem: DetectedObject, newItem: DetectedObject): Boolean {
+            return oldItem == newItem
+        }
+    }
+
+    private val differ = AsyncListDiffer(this, differCallback)
 
     private val detectedObjectListK: ArrayList<DetectedObject> = ArrayList()
 
@@ -32,6 +47,13 @@ class DriveResultsAdapter: RecyclerView.Adapter<DriveResultsAdapter.DetectedObje
 
         objectName.text = detectedObject.name
         objectCount.text = detectedObject.count.toString()
+    }
+
+    fun addDetectedObject(newObject: DetectedObject) {
+        val updatedList = differ.currentList.toMutableList()
+        updatedList.removeAll { it.name == newObject.name }
+        updatedList.add(newObject)
+        differ.submitList(updatedList)
     }
 
     fun addObject(obj: DetectedObject) {
