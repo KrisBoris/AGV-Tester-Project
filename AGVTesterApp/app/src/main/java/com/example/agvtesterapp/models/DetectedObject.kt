@@ -9,5 +9,5 @@ data class DetectedObject(
     @PrimaryKey(autoGenerate = true)
     var id: Int? = null,
     val name: String,
-    val count: Int
+    var count: Int
 ): Serializable

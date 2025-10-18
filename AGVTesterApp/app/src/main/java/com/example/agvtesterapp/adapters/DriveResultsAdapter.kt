@@ -27,8 +27,6 @@ class DriveResultsAdapter: RecyclerView.Adapter<DriveResultsAdapter.DetectedObje
 
     private val differ = AsyncListDiffer(this, differCallback)
 
-    private val detectedObjectListK: ArrayList<DetectedObject> = ArrayList()
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DetectedObjectViewHolder {
         return DetectedObjectViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.item_detected_object, parent, false)
@@ -36,11 +34,11 @@ class DriveResultsAdapter: RecyclerView.Adapter<DriveResultsAdapter.DetectedObje
     }
 
     override fun getItemCount(): Int {
-        return detectedObjectListK.size
+        return differ.currentList.size
     }
 
     override fun onBindViewHolder(holder: DetectedObjectViewHolder, position: Int) {
-        val detectedObject = detectedObjectListK[position]
+        val detectedObject = differ.currentList[position]
 
         val objectName = holder.itemView.findViewById<TextView>(R.id.tvObjectName)
         val objectCount = holder.itemView.findViewById<TextView>(R.id.tvObjectCount)
@@ -49,29 +47,7 @@ class DriveResultsAdapter: RecyclerView.Adapter<DriveResultsAdapter.DetectedObje
         objectCount.text = detectedObject.count.toString()
     }
 
-    fun addDetectedObject(newObject: DetectedObject) {
-        val updatedList = differ.currentList.toMutableList()
-        updatedList.removeAll { it.name == newObject.name }
-        updatedList.add(newObject)
-        differ.submitList(updatedList)
-    }
-
-    fun addObject(obj: DetectedObject) {
-        detectedObjectListK.add(obj)
-    }
-
-    fun addObjectsList(objectsList: ArrayList<DetectedObject>) {
-        detectedObjectListK.addAll(objectsList)
-    }
-
-    fun replaceObjectsList(objectsList: ArrayList<DetectedObject>) {
-        clearObjects()
-        addObjectsList(objectsList)
-    }
-
-    fun getObjets(): ArrayList<DetectedObject> = detectedObjectListK
-
-    fun clearObjects() {
-        detectedObjectListK.clear()
+    fun addDetectedObjects(objectsList: List<DetectedObject>) {
+        differ.submitList(objectsList)
     }
 }

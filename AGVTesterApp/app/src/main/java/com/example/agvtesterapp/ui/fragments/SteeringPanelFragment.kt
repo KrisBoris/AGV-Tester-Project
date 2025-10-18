@@ -55,7 +55,7 @@ class SteeringPanelFragment : Fragment(R.layout.fragment_steering_panel) {
 
             btnFinish.setOnClickListener {
 
-                // Move detected objects to the database
+                // Move detected objects from viewModel MutableList to the database
                 if (viewModel.detectedObjects.value != null) {
                     for (detectedObject in viewModel.detectedObjects.value!!) {
                         viewModel.addDetectedObject(detectedObject)

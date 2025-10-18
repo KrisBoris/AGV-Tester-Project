@@ -5,6 +5,7 @@ import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.agvtesterapp.models.CameraImage
+import com.example.agvtesterapp.models.DetectedObject
 import com.example.agvtesterapp.util.ConnectionStatus
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken

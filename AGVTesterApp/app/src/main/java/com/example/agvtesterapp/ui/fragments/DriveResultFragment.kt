@@ -21,6 +21,10 @@ class DriveResultFragment : Fragment(R.layout.fragment_drive_result) {
 
         viewModel =(activity as MainActivity).viewModel
         setupRecyclerView()
+
+        viewModel.getResults().observe(viewLifecycleOwner) { detectedObjects ->
+            adapter.addDetectedObjects(detectedObjects)
+        }
     }
 
     private fun setupRecyclerView() {

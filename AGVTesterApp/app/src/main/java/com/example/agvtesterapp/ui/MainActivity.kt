@@ -1,6 +1,7 @@
 package com.example.agvtesterapp.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
@@ -17,10 +18,11 @@ class MainActivity : AppCompatActivity() {
 
     /*
     Things to add:
-    - var for drive status (is drive started) + not allowing to change IP during drive +
-        after IP change connect to new IP
-    - add default image in case of losing camera connection
-    - add serialization
+    - prevent steering panel to go into sleep mode
+    - add moving data from viewModel LiveData to the database after returning from the view
+    - add connect all WebSockets button to the StartDriveFragment
+    - Add clear database button to DriveResultsFragment
+    - Add setting sockets ports in SettingsFragment
      */
 
     private lateinit var binding: ActivityMainBinding
@@ -40,6 +42,8 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
+        Log.i("DEBUG_TAG", "After repository creation")
+
         val viewModelProviderFactory = ViewModelProviderFactory(application, repository)
         viewModel = ViewModelProvider(this, viewModelProviderFactory).get(ViewModel::class.java)
 
@@ -48,6 +52,8 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigationView.setupWithNavController(navController)
 
         connectAllSockets()
+
+        Log.i("DEBUG_TAG", "Main activity finished")
     }
 
     private fun connectAllSockets() {
