@@ -2,6 +2,7 @@ package com.example.agvtesterapp.ui
 
 import android.app.Application
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -24,21 +25,39 @@ class ViewModel(app: Application, val repository: Repository): AndroidViewModel(
     // Shared preferences
     private val shared_prefs = "shared_prefs"
     private val ip_address_key = "ipaddr_key"
+    private val camera_socket_port_key = "camport_key"
+    private val objects_socket_port_key = "objectsport_key"
+    private val steering_socket_port_key = "steeringport_key"
 
     private var ipAddress: String? = null
+    private val socketsPorts: MutableMap<SocketType, String> = mutableMapOf()
 
     init {
+        Log.i("DEBUG_TAG", "ViewModel init")
+
         ipAddress = getSharedPrefsString(shared_prefs, ip_address_key) ?: WebSocketClient.IP_ADDRESS
+
+        socketsPorts[SocketType.CAMERA_IMAGE] = getSharedPrefsString(shared_prefs, camera_socket_port_key)
+            ?: WebSocketClient.CAMERA_SOCKET_PORT
+        socketsPorts[SocketType.DETECTED_OBJECTS] = getSharedPrefsString(shared_prefs, objects_socket_port_key)
+            ?: WebSocketClient.OBJECTS_SOCKET_PORT
+        socketsPorts[SocketType.STEERING] = getSharedPrefsString(shared_prefs, steering_socket_port_key)
+            ?: WebSocketClient.STEERING_SOCKET_PORT
 
         socketsStatus = mapOf(
             SocketType.DETECTED_OBJECTS to MutableLiveData(),
             SocketType.CAMERA_IMAGE to MutableLiveData(),
             SocketType.STEERING to MutableLiveData())
 
-        for(socket in SocketType.entries)
+        for (socket in SocketType.entries) {
+            val url = "${ipAddress}:${socketsPorts[socket]}"
+            setSocketIpAddress(socket, url)
             setConnectionStatusReceiver(socket, socketsStatus[socket]!!)
+        }
 
         detectedObjects.value = mutableListOf()
+
+        Log.i("DEBUG_TAG", "ViewModel end of init")
     }
 
     private fun getSharedPrefsString(sharedPrefsKey: String, valueKey: String): String? =
@@ -70,6 +89,7 @@ class ViewModel(app: Application, val repository: Repository): AndroidViewModel(
         repository.clearResults()
     }
 
+    fun setSocketIpAddress(socket: SocketType, address: String) = repository.setSocketIpAddress(socket, address)
     fun setConnectionStatusReceiver(socket: SocketType, receiver: MutableLiveData<ConnectionStatus>) =
         repository.setConnectionStatusReceiver(socket, receiver)
     fun <T> connectSocket(socket: SocketType, dataReceiver: MutableLiveData<T>? = null) = viewModelScope.launch {

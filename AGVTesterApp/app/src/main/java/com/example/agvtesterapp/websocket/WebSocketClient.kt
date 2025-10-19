@@ -30,11 +30,14 @@ import kotlinx.coroutines.plus
 import java.util.concurrent.TimeUnit
 
  class WebSocketClient(
-     private val url: String,
+     private var url: String? = null,
      private var socketStatus: MutableLiveData<ConnectionStatus>? = null
 ) {
     companion object {
         const val IP_ADDRESS = "ws://192.168.45.15"
+        const val CAMERA_SOCKET_PORT = "7891"
+        const val OBJECTS_SOCKET_PORT = "7892"
+        const val STEERING_SOCKET_PORT = "7893"
         const val WEBSOCKET_TAG = "WEBSOCKET_TAG"
         const val PING_INTERVAL = 10_000L   // 10s
         const val RECONNECT_DELAY = 5_000L
@@ -99,7 +102,11 @@ import java.util.concurrent.TimeUnit
         }
     }
 
-     fun setConnectionStatusReceiver(receiver: MutableLiveData<ConnectionStatus>) {
+    fun setIpAddress(address: String) {
+        url = address
+    }
+
+    fun setConnectionStatusReceiver(receiver: MutableLiveData<ConnectionStatus>) {
         socketStatus = receiver
     }
 
@@ -107,18 +114,22 @@ import java.util.concurrent.TimeUnit
         try {
             Log.d(WEBSOCKET_TAG,"Connecting to websocket at $url...")
 
-            session = client.webSocketSession(url)
-            if(socketStatus != null)
-                listener.onConnected(socketStatus!!)
+            if (url != null) {
+                session = client.webSocketSession(url!!)
 
-            connectionAttempts = 0
-            Log.d(WEBSOCKET_TAG,"Connected to websocket at $url")
+                if(socketStatus != null)
+                    listener.onConnected(socketStatus!!)
 
-            if (dataReceiver != null) {
-                scope.launch {
-                    listenForMessages(socketType, dataReceiver)
+                connectionAttempts = 0
+                Log.d(WEBSOCKET_TAG,"Connected to websocket at $url")
+
+                if (dataReceiver != null) {
+                    scope.launch {
+                        listenForMessages(socketType, dataReceiver)
+                    }
                 }
             }
+
 
         } catch (e: Exception) {
             // ... handle errors and reconnect

@@ -33,12 +33,21 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+//        val repository = Repository(applicationContext,
+//            ResultsDatabase(this),
+//            mapOf(
+//                SocketType.CAMERA_IMAGE to WebSocketClient("${viewModel.getIpAddress()}:7891"),
+//                SocketType.DETECTED_OBJECTS to WebSocketClient("${viewModel.getIpAddress()}:7892"),
+//                SocketType.STEERING to WebSocketClient("${viewModel.getIpAddress()}:7893")
+//            )
+//        )
+
         val repository = Repository(applicationContext,
             ResultsDatabase(this),
             mapOf(
-                SocketType.CAMERA_IMAGE to WebSocketClient("${viewModel.getIpAddress()}:7891"),
-                SocketType.DETECTED_OBJECTS to WebSocketClient("${viewModel.getIpAddress()}:7892"),
-                SocketType.STEERING to WebSocketClient("${viewModel.getIpAddress()}:7893")
+                SocketType.CAMERA_IMAGE to WebSocketClient(),
+                SocketType.DETECTED_OBJECTS to WebSocketClient(),
+                SocketType.STEERING to WebSocketClient()
             )
         )
 

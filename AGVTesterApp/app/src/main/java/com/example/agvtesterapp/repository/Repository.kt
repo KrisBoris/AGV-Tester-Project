@@ -33,6 +33,7 @@ class Repository(
 
     fun setConnectionStatusReceiver(socket: SocketType, receiver: MutableLiveData<ConnectionStatus>) =
         sockets[socket]?.setConnectionStatusReceiver(receiver)
+    fun setSocketIpAddress(socket: SocketType, address: String) = sockets[socket]?.setIpAddress(address)
     suspend fun <T> connectSocket(socket: SocketType, dataReceiver: MutableLiveData<T>? = null) = sockets[socket]?.connect(socket, dataReceiver)
     suspend fun <T> reconnectSocket(socket: SocketType, dataReceiver: MutableLiveData<T>? = null) = sockets[socket]?.reconnect(socket, dataReceiver)
     suspend fun disconnectSocket(socket: SocketType) = sockets[socket]?.disconnect()
