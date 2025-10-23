@@ -22,7 +22,10 @@ class MainActivity : AppCompatActivity() {
     - add moving data from viewModel LiveData to the database after returning from the view
     - add connect all WebSockets button to the StartDriveFragment
     - Add clear database button to DriveResultsFragment
-    - Add setting sockets ports in SettingsFragment
+    - Add setting sockets ports in SettingsFragment + add method call setSocketIpAddress after changing it
+        Disconnect all sockets and save new IP address in setIpAddress method
+        Disconnect selected socket and save new IP address in setSocketPort method
+    - Clear viewModel LiveData with detected objects after finished drive
      */
 
     private lateinit var binding: ActivityMainBinding
@@ -60,7 +63,7 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
         binding.bottomNavigationView.setupWithNavController(navController)
 
-        connectAllSockets()
+//        connectAllSockets()
 
         Log.i("DEBUG_TAG", "Main activity finished")
     }

@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.view.WindowManager
 import android.widget.Button
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.agvtesterapp.R
@@ -54,17 +56,28 @@ class SteeringPanelFragment : Fragment(R.layout.fragment_steering_panel) {
             setButtonOnTouchListener(btnRight, scope, rightTurnVelocity)
 
             btnFinish.setOnClickListener {
-
-                // Move detected objects from viewModel MutableList to the database
-                if (viewModel.detectedObjects.value != null) {
-                    for (detectedObject in viewModel.detectedObjects.value!!) {
-                        viewModel.addDetectedObject(detectedObject)
-                    }
-                }
-
+                moveObjectsToDatabase()
                 findNavController().popBackStack()
             }
         }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            // Called when the back button is pressed
+            moveObjectsToDatabase()
+            findNavController().popBackStack()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Keeps the screen constantly on while in the steering panel
+        requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Clears the flag to no longer keep the screen constantly on
+        requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -91,6 +104,17 @@ class SteeringPanelFragment : Fragment(R.layout.fragment_steering_panel) {
             }
 
             view?.onTouchEvent(event) ?: true
+        }
+    }
+
+    private fun moveObjectsToDatabase() {
+        // Move detected objects from viewModel MutableList to the database
+        if (viewModel.detectedObjects.value != null) {
+            for (detectedObject in viewModel.detectedObjects.value!!) {
+                Log.d(WebSocketClient.WEBSOCKET_TAG, "Adding object to the list: ${detectedObject.name}, count: ${detectedObject.count}")
+                viewModel.addDetectedObject(detectedObject)
+            }
+            viewModel.detectedObjects.value?.clear()
         }
     }
 }

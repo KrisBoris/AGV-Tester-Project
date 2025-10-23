@@ -1,23 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.fragments.DriveResultFragment">
+    tools:context=".ui.fragments.DriveResultFragment"
+    android:orientation="vertical"
+    android:padding="1dp">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
-        android:text="Drive result"
-        android:textSize="30sp"
-        android:fontFamily="@font/poppins"
-        android:textColor="@color/medium_dark_green"
-        android:textStyle="bold" />
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:text="Drive result"
+            android:textSize="30sp"
+            android:fontFamily="@font/poppins"
+            android:textColor="@color/medium_dark_green"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnClearDriveResults"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="12dp"
+            android:backgroundTint="@color/medium_dark_green"
+            android:text="Clear"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:cornerRadius="8dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvDriveResult"
@@ -29,8 +52,8 @@
         app:layout_constraintTop_toTopOf="parent"
         android:clipToPadding="false"
         android:paddingBottom="50dp"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="12dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

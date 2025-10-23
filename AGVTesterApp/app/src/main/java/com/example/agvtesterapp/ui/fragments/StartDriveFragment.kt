@@ -49,6 +49,15 @@ class StartDriveFragment : Fragment(R.layout.fragment_start_drive) {
                 viewModel.reconnectSocket(SocketType.STEERING, MutableLiveData(Int))
             }
 
+            btnConnectAllSockets.setOnClickListener {
+                viewModel.disconnectAllSockets()
+                viewModel.connectSocket(SocketType.CAMERA_IMAGE, viewModel.cameraImage)
+                viewModel.connectSocket(SocketType.DETECTED_OBJECTS, viewModel.detectedObjects)
+                viewModel.connectSocket(SocketType.STEERING, MutableLiveData(Int))  // Pass something random to make him shut up (deleted this comment later)
+            }
+            btnDisconnectAllSockets.setOnClickListener {
+                viewModel.disconnectAllSockets()
+            }
             btnStartDrive.setOnClickListener {
                 findNavController().navigate(R.id.action_startDriveFragment_to_steeringPanelFragment)
             }

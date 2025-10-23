@@ -67,21 +67,24 @@ class WebSocketDefaultEvents: WebSocketEvents {
      */
     override fun <T> onReceiveDetectedObject(data: String, dataContainer: MutableLiveData<T>) {
 
-        val mapType = object : TypeToken<Map<String, Any>>() {}.type
-        val detectedObjects: Map<String, Any> = Gson().fromJson(data, mapType)
+        val mapType = object : TypeToken<Map<String, Int>>() {}.type
+        val detectedObjects: Map<String, Int> = Gson().fromJson(data, mapType)
         val list = (dataContainer.value as? MutableList<DetectedObject>) ?: mutableListOf() // Add safe cast
 
         for ((name, count) in detectedObjects) {
-            val countInt = (count as? Int)?.toInt() ?: 0
             val existingObj = list.find {it.name == name}
 
             if (existingObj != null) {
-                if (countInt > existingObj.count)
-                   existingObj.count = countInt
+                if (count > existingObj.count)
+                   existingObj.count = count
             }
             else {
-                list.add(DetectedObject(name = name, count = countInt))
+                list.add(DetectedObject(name = name, count = count))
             }
+        }
+
+        list.forEach { detectedObject ->
+            Log.d(WebSocketClient.WEBSOCKET_TAG, "Object: ${detectedObject.name}, count: ${detectedObject.count}")
         }
 
         @Suppress("UNCHECKED_CAST")

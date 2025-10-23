@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit
      private var socketStatus: MutableLiveData<ConnectionStatus>? = null
 ) {
     companion object {
-        const val IP_ADDRESS = "ws://192.168.45.15"
+        const val IP_ADDRESS = "ws://192.168.45.28"
         const val CAMERA_SOCKET_PORT = "7891"
         const val OBJECTS_SOCKET_PORT = "7892"
         const val STEERING_SOCKET_PORT = "7893"

@@ -35,13 +35,13 @@ class ViewModel(app: Application, val repository: Repository): AndroidViewModel(
     init {
         Log.i("DEBUG_TAG", "ViewModel init")
 
-        ipAddress = getSharedPrefsString(shared_prefs, ip_address_key) ?: WebSocketClient.IP_ADDRESS
+        ipAddress = getSharedPrefsString(ip_address_key) ?: WebSocketClient.IP_ADDRESS
 
-        socketsPorts[SocketType.CAMERA_IMAGE] = getSharedPrefsString(shared_prefs, camera_socket_port_key)
+        socketsPorts[SocketType.CAMERA_IMAGE] = getSharedPrefsString(camera_socket_port_key)
             ?: WebSocketClient.CAMERA_SOCKET_PORT
-        socketsPorts[SocketType.DETECTED_OBJECTS] = getSharedPrefsString(shared_prefs, objects_socket_port_key)
+        socketsPorts[SocketType.DETECTED_OBJECTS] = getSharedPrefsString(objects_socket_port_key)
             ?: WebSocketClient.OBJECTS_SOCKET_PORT
-        socketsPorts[SocketType.STEERING] = getSharedPrefsString(shared_prefs, steering_socket_port_key)
+        socketsPorts[SocketType.STEERING] = getSharedPrefsString(steering_socket_port_key)
             ?: WebSocketClient.STEERING_SOCKET_PORT
 
         socketsStatus = mapOf(
@@ -60,11 +60,11 @@ class ViewModel(app: Application, val repository: Repository): AndroidViewModel(
         Log.i("DEBUG_TAG", "ViewModel end of init")
     }
 
-    private fun getSharedPrefsString(sharedPrefsKey: String, valueKey: String): String? =
-        repository.getSharedPrefsString(sharedPrefsKey, valueKey)
+    private fun getSharedPrefsString(valueKey: String): String? =
+        repository.getSharedPrefsString(shared_prefs, valueKey)
 
-    private fun putSharedPrefsString(sharedPrefsKey: String, valueKey: String, value: String) =
-        repository.putSharedPrefsString(sharedPrefsKey, valueKey, value)
+    private fun putSharedPrefsString(valueKey: String, value: String) =
+        repository.putSharedPrefsString(shared_prefs, valueKey, value)
 
 //    private val ports: Map<SocketType, String> = mapOf()
 
@@ -72,8 +72,22 @@ class ViewModel(app: Application, val repository: Repository): AndroidViewModel(
 
     fun setIpAddress(address: String?): Boolean {
         return if (address != null && InetAddressValidator.getInstance().isValidInet4Address(address)) {
-            putSharedPrefsString(shared_prefs, ip_address_key, address)
+            putSharedPrefsString(ip_address_key, address)
             ipAddress = "ws://${address}"
+            true
+        } else
+            false
+    }
+
+    fun setSocketPort(socket: SocketType, port: String): Boolean {
+        val portNumber = port.toIntOrNull() ?: return false
+        val isPortValid = portNumber in 1..65535
+        return if (isPortValid) {
+            when (socket) {
+                SocketType.CAMERA_IMAGE -> putSharedPrefsString(camera_socket_port_key, port)
+                SocketType.DETECTED_OBJECTS -> putSharedPrefsString(objects_socket_port_key, port)
+                SocketType.STEERING -> putSharedPrefsString(steering_socket_port_key, port)
+            }
             true
         } else
             false

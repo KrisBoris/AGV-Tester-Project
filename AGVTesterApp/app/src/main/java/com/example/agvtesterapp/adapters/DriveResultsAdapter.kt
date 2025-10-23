@@ -1,5 +1,6 @@
 package com.example.agvtesterapp.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.agvtesterapp.R
 import com.example.agvtesterapp.models.DetectedObject
+import com.example.agvtesterapp.websocket.WebSocketClient
 
 class DriveResultsAdapter: RecyclerView.Adapter<DriveResultsAdapter.DetectedObjectViewHolder>() {
 
@@ -48,6 +50,9 @@ class DriveResultsAdapter: RecyclerView.Adapter<DriveResultsAdapter.DetectedObje
     }
 
     fun addDetectedObjects(objectsList: List<DetectedObject>) {
+        objectsList.forEach { detectedObject ->
+            Log.d(WebSocketClient.WEBSOCKET_TAG, "Adapter: ${detectedObject.name}, count: ${detectedObject.count}")
+        }
         differ.submitList(objectsList)
     }
 }
