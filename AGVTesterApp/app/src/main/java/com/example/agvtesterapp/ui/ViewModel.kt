@@ -50,7 +50,7 @@ class ViewModel(app: Application, val repository: Repository): AndroidViewModel(
             SocketType.STEERING to MutableLiveData())
 
         for (socket in SocketType.entries) {
-            val url = "${ipAddress}:${socketsPorts[socket]}"
+            val url = "ws://${ipAddress}:${socketsPorts[socket]}"
             setSocketIpAddress(socket, url)
             setConnectionStatusReceiver(socket, socketsStatus[socket]!!)
         }
@@ -69,6 +69,8 @@ class ViewModel(app: Application, val repository: Repository): AndroidViewModel(
 //    private val ports: Map<SocketType, String> = mapOf()
 
     fun getIpAddress(): String? = ipAddress
+
+    fun getSocketPort(socket: SocketType): String? = socketsPorts[socket]
 
     fun setIpAddress(address: String?): Boolean {
         return if (address != null && InetAddressValidator.getInstance().isValidInet4Address(address)) {

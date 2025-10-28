@@ -12,8 +12,15 @@ import com.example.agvtesterapp.R
 import com.example.agvtesterapp.models.DetectedObject
 import com.example.agvtesterapp.websocket.WebSocketClient
 
+/**
+ * Class containing adapter for RecyclerView responsible
+ * for displaying list of objects detected during drive
+ */
 class DriveResultsAdapter: RecyclerView.Adapter<DriveResultsAdapter.DetectedObjectViewHolder>() {
 
+    /**
+     *
+     */
     inner class DetectedObjectViewHolder(itemView: View): RecyclerView.ViewHolder(itemView)
 
     private val differCallback = object : DiffUtil.ItemCallback<DetectedObject>() {

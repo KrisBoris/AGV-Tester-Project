@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="16dp"
         android:text="Settings"
         android:textSize="24sp"
         android:fontFamily="@font/poppins"
@@ -39,11 +39,12 @@
 
         <EditText
             android:id="@+id/etSetIpAddress"
-            android:layout_width="180dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_marginBottom="12dp"
             android:padding="4dp"
             android:paddingStart="12dp"
@@ -53,19 +54,6 @@
             android:textColor="@color/black"
             android:fontFamily="@font/poppins"
             android:background="@drawable/text_border" />
-
-        <Button
-            android:id="@+id/btnSaveIpAddress"
-            android:layout_width="wrap_content"
-            android:layout_height="42dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginEnd="12dp"
-            android:layout_marginBottom="8dp"
-            android:backgroundTint="@color/medium_dark_green"
-            android:text="Save"
-            android:textSize="16sp"
-            android:textStyle="bold" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -90,11 +78,12 @@
 
         <EditText
             android:id="@+id/etSetCameraPort"
-            android:layout_width="180dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_marginBottom="12dp"
             android:padding="4dp"
             android:paddingStart="12dp"
@@ -104,19 +93,6 @@
             android:textColor="@color/black"
             android:fontFamily="@font/poppins"
             android:background="@drawable/text_border" />
-
-        <Button
-            android:id="@+id/btnSaveCameraPort"
-            android:layout_width="wrap_content"
-            android:layout_height="42dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginEnd="12dp"
-            android:layout_marginBottom="8dp"
-            android:backgroundTint="@color/medium_dark_green"
-            android:text="Save"
-            android:textSize="16sp"
-            android:textStyle="bold" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -141,11 +117,12 @@
 
         <EditText
             android:id="@+id/etSetDetectedObjectsPort"
-            android:layout_width="180dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_marginBottom="12dp"
             android:padding="4dp"
             android:paddingStart="12dp"
@@ -155,19 +132,6 @@
             android:textColor="@color/black"
             android:fontFamily="@font/poppins"
             android:background="@drawable/text_border" />
-
-        <Button
-            android:id="@+id/btnSaveDetectedObjectsPort"
-            android:layout_width="wrap_content"
-            android:layout_height="42dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginEnd="12dp"
-            android:layout_marginBottom="8dp"
-            android:backgroundTint="@color/medium_dark_green"
-            android:text="Save"
-            android:textSize="16sp"
-            android:textStyle="bold" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -192,11 +156,12 @@
 
         <EditText
             android:id="@+id/etSetSteeringPort"
-            android:layout_width="180dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_marginBottom="12dp"
             android:padding="4dp"
             android:paddingStart="12dp"
@@ -206,19 +171,6 @@
             android:textColor="@color/black"
             android:fontFamily="@font/poppins"
             android:background="@drawable/text_border" />
-
-        <Button
-            android:id="@+id/btnSaveSteeringPort"
-            android:layout_width="wrap_content"
-            android:layout_height="42dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginEnd="12dp"
-            android:layout_marginBottom="8dp"
-            android:backgroundTint="@color/medium_dark_green"
-            android:text="Save"
-            android:textSize="16sp"
-            android:textStyle="bold" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -231,7 +183,7 @@
         android:layout_marginEnd="12dp"
         android:layout_marginBottom="8dp"
         android:backgroundTint="@color/medium_dark_green"
-        android:text="Save"
+        android:text="Save changes"
         android:textSize="16sp"
         android:textStyle="bold"
         app:cornerRadius="16dp"/>
