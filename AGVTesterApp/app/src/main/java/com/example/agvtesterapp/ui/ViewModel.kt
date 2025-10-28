@@ -96,7 +96,7 @@ class ViewModel(app: Application, val repository: Repository): AndroidViewModel(
     }
 
     fun addDetectedObject(detectedObject: DetectedObject) = viewModelScope.launch {
-        repository.upsertResult(detectedObject)
+        repository.insertResult(detectedObject)
     }
 
     fun getResults() = repository.getResults()

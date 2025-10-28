@@ -9,28 +9,63 @@ import com.example.agvtesterapp.util.ConnectionStatus
 import com.example.agvtesterapp.util.SocketType
 import com.example.agvtesterapp.websocket.WebSocketClient
 
+/**
+ * Class that provides methods to access all external objects and data sources
+ * @param context application context used to access shared preferences
+ * @param db [ResultsDatabase] instance that stores detected objects
+ * @param sockets [WebSocketClient] instances mapped to dedicated [SocketType]
+ */
 class Repository(
     private val context: Context,
     private val db: ResultsDatabase,
     private val sockets: Map<SocketType, WebSocketClient>
 ) {
-    fun getSharedPrefsString(sharedPrefsKey: String, valueKey: String): String? {
-        val sharedPreferences = context.getSharedPreferences(sharedPrefsKey, Context.MODE_PRIVATE)
 
-        return sharedPreferences.getString(valueKey, null)
+    /**
+     * @param sharedPrefsKey shared preferences file's key
+     * @param key desired value's key
+     * @return [String] value paired with given [key] or null if not found
+     */
+    fun getSharedPrefsString(sharedPrefsKey: String, key: String): String? {
+        val sharedPreferences = context.getSharedPreferences(sharedPrefsKey, Context.MODE_PRIVATE)
+        return sharedPreferences.getString(key, null)
     }
 
-    fun putSharedPrefsString(sharedPrefsKey: String, valueKey: String, value: String) {
+    /**
+     * Saves given key-value pair to dedicated shared preferences file
+     * @param sharedPrefsKey shared preferences file's key
+     * @param key value's key
+     * @param value [String] value
+     */
+    fun putSharedPrefsString(sharedPrefsKey: String, key: String, value: String) {
         val sharedPreferences = context.getSharedPreferences(sharedPrefsKey, Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-
-        editor.putString(valueKey, value)
+        editor.putString(key, value)
         editor.apply()
     }
-    suspend fun upsertResult(detectedObject: DetectedObject) = db.getResultsDAO().upsert(detectedObject)
+
+
+    /**
+     * Inserts given detected object into the database
+     * @param detectedObject detected object that will by insert into database
+     * @return the row ID of the inserted record in the table
+     */
+    suspend fun insertResult(detectedObject: DetectedObject) = db.getResultsDAO().insert(detectedObject)
+
+    /**
+     *
+     */
     fun getResults() = db.getResultsDAO().getResults()
+
+    /**
+     *
+     */
     suspend fun clearResults() = db.getResultsDAO().clearResults()
 
+
+    /**
+     *
+     */
     fun setConnectionStatusReceiver(socket: SocketType, receiver: MutableLiveData<ConnectionStatus>) =
         sockets[socket]?.setConnectionStatusReceiver(receiver)
     fun setSocketIpAddress(socket: SocketType, address: String) = sockets[socket]?.setIpAddress(address)

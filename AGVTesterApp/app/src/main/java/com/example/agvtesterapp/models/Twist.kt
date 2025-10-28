@@ -1,8 +1,10 @@
 package com.example.agvtesterapp.models
 
-import java.io.Serializable
-
+/**
+ * Data class defining structure of the message type used steer the AGV
+ * It corresponds to ROS geometry_msgs/Twist message type
+ */
 data class Twist(
     val linear: Vector3,
     val angular: Vector3
-): Serializable
+)

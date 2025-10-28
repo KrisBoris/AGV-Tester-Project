@@ -6,11 +6,17 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.agvtesterapp.models.DetectedObject
 
+/**
+ * Database to store detected objects scheme
+ */
 @Database(
     entities = [DetectedObject::class],
     version = 1
 )
 
+/**
+ * Abstract class that creates a Room database to store detected objects
+ */
 abstract class ResultsDatabase: RoomDatabase() {
 
     abstract fun getResultsDAO(): ResultsDAO
@@ -32,6 +38,11 @@ abstract class ResultsDatabase: RoomDatabase() {
             }
         }
 
+        /**
+         * Creates and configures local Room database for storing detected objects
+         * @param context application context used to build database safely (without memory leaks)
+         * @return [ResultsDatabase] instance connected to "results_db.db"
+         */
         private fun createDatabase(context: Context) =
             Room.databaseBuilder(
                 context.applicationContext,
