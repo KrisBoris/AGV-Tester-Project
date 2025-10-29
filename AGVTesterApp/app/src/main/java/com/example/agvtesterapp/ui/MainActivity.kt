@@ -1,9 +1,7 @@
 package com.example.agvtesterapp.ui
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -14,21 +12,25 @@ import com.example.agvtesterapp.repository.Repository
 import com.example.agvtesterapp.util.SocketType
 import com.example.agvtesterapp.websocket.WebSocketClient
 
+/**
+ * Class that contains application's MainActivity - used to set up
+ * the most important components of the application ([ViewModel], [Repository] etc.)
+ */
 class MainActivity : AppCompatActivity() {
 
     /*
-    Things to add:
-    - prevent steering panel to go into sleep mode
-    - add moving data from viewModel LiveData to the database after returning from the view
-    - add connect all WebSockets button to the StartDriveFragment
-    - Add clear database button to DriveResultsFragment
-    - Add setting sockets ports in SettingsFragment + add method call setSocketIpAddress after changing it
-        Disconnect all sockets and save new IP address in setIpAddress method
-        Disconnect selected socket and save new IP address in setSocketPort method
-    - Clear viewModel LiveData with detected objects after finished drive
+        Things to add:
+        - Logs + tag
      */
 
+    /**
+     * View Binding object - allows to safely access view
+     */
     private lateinit var binding: ActivityMainBinding
+
+    /**
+     * [ViewModel] instance - allows for sharing data and methods between activities and fragments
+     */
     lateinit var viewModel: ViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,47 +38,31 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-//        val repository = Repository(applicationContext,
-//            ResultsDatabase(this),
-//            mapOf(
-//                SocketType.CAMERA_IMAGE to WebSocketClient("${viewModel.getIpAddress()}:7891"),
-//                SocketType.DETECTED_OBJECTS to WebSocketClient("${viewModel.getIpAddress()}:7892"),
-//                SocketType.STEERING to WebSocketClient("${viewModel.getIpAddress()}:7893")
-//            )
-//        )
-
+        // Repository setup
         val repository = Repository(applicationContext,
             ResultsDatabase(this),
             mapOf(
+                // Creates separate WebSocketClient instances - one for each socket type
                 SocketType.CAMERA_IMAGE to WebSocketClient(),
                 SocketType.DETECTED_OBJECTS to WebSocketClient(),
                 SocketType.STEERING to WebSocketClient()
             )
         )
 
-        Log.i("DEBUG_TAG", "After repository creation")
-
+        // ViewModel setup
         val viewModelProviderFactory = ViewModelProviderFactory(application, repository)
         viewModel = ViewModelProvider(this, viewModelProviderFactory).get(ViewModel::class.java)
 
+        // Navigation controller setup
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
         val navController = navHostFragment.navController
         binding.bottomNavigationView.setupWithNavController(navController)
-
-//        connectAllSockets()
-
-        Log.i("DEBUG_TAG", "Main activity finished")
-    }
-
-    private fun connectAllSockets() {
-        viewModel.connectSocket(SocketType.CAMERA_IMAGE, viewModel.cameraImage)
-        viewModel.connectSocket(SocketType.DETECTED_OBJECTS, viewModel.detectedObjects)
-        viewModel.connectSocket(SocketType.STEERING, MutableLiveData(Int))  // Pass something random to make him shut up (deleted this comment later)
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
+        // Disconnects all WebSocket clients once the MainActivity is destroyed
         viewModel.disconnectAllSockets()
     }
 }

@@ -1,6 +1,5 @@
 package com.example.agvtesterapp.websocket
 
-import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.agvtesterapp.models.Twist
@@ -23,12 +22,14 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import java.util.concurrent.TimeUnit
 
+/**
+ * 
+ */
  class WebSocketClient(
      private var url: String? = null,
      private var socketStatus: MutableLiveData<ConnectionStatus>? = null
@@ -167,30 +168,6 @@ import java.util.concurrent.TimeUnit
         if(socketStatus != null)
             listener.onDisconnected(socketStatus!!, "Disconnected successfully")
     }
-
-     suspend fun <T> setDataReceiver(dataReceiver: MutableLiveData<T>) {
-
-         var onReceive: ((String, MutableLiveData<T>) -> Unit)? = null
-
-         when(dataReceiver.value) {
-             is MutableList<*> -> onReceive = listener::onReceiveDetectedObject
-             is Bitmap -> onReceive = listener::onReceiveCameraImage
-         }
-
-         if(session != null && onReceive != null) {
-             session!!.incoming
-                 .receiveAsFlow()
-                 .filterIsInstance<Frame.Text>()
-                 .filterNotNull()
-                 .collect { data ->
-                     val message = data.readText()
-
-                     onReceive(message, dataReceiver)
-
-                     Log.d(WEBSOCKET_TAG,"Received message: $message")
-                 }
-         }
-     }
 
     suspend fun send(cmd: Twist) {
         try {

@@ -22,6 +22,7 @@ class Repository(
 ) {
 
     /**
+     * Gets [String] value for given key, from designated shared preferences file
      * @param sharedPrefsKey shared preferences file's key
      * @param key desired value's key
      * @return [String] value paired with given [key] or null if not found
@@ -53,26 +54,55 @@ class Repository(
     suspend fun insertResult(detectedObject: DetectedObject) = db.getResultsDAO().insert(detectedObject)
 
     /**
-     *
+     * Accesses database to retrieve list of all detected objects
+     * @return list of all detected objects
      */
     fun getResults() = db.getResultsDAO().getResults()
 
     /**
-     *
+     * Accesses database to removes all detected objects from it
      */
     suspend fun clearResults() = db.getResultsDAO().clearResults()
 
 
     /**
-     *
+     * Sets up WebSocket client instance's IP address
+     * @param socket socket type
+     * @param address IP address (IPv4 protocol)
+     */
+    fun setSocketIpAddress(socket: SocketType, address: String) = sockets[socket]?.setIpAddress(address)
+
+    /**
+     * Passes reference to the container holding connection status, to the WebSocket client instance
+     * @param socket socket type
+     * @param receiver reference to the container holding connection status
      */
     fun setConnectionStatusReceiver(socket: SocketType, receiver: MutableLiveData<ConnectionStatus>) =
         sockets[socket]?.setConnectionStatusReceiver(receiver)
-    fun setSocketIpAddress(socket: SocketType, address: String) = sockets[socket]?.setIpAddress(address)
+
+    /**
+     * Connects WebSocket client to the WebSocket server specified by client's IP address
+     * @param socket socket type
+     * @param dataReceiver reference to the container for data received from server
+     */
     suspend fun <T> connectSocket(socket: SocketType, dataReceiver: MutableLiveData<T>? = null) = sockets[socket]?.connect(socket, dataReceiver)
+
+    /**
+     * Reconnects WebSocket client to the WebSocket server specified by client's IP address
+     * @param socket socket type
+     * @param dataReceiver reference to the container for data received from server
+     */
     suspend fun <T> reconnectSocket(socket: SocketType, dataReceiver: MutableLiveData<T>? = null) = sockets[socket]?.reconnect(socket, dataReceiver)
+
+    /**
+     * Disconnects WebSocket client from WebSocket server
+     * @param socket socket type
+     */
     suspend fun disconnectSocket(socket: SocketType) = sockets[socket]?.disconnect()
-    suspend fun <T> setDataReceiver(socket: SocketType, receiver: MutableLiveData<T>) =
-        sockets[socket]?.setDataReceiver(receiver)
-    suspend fun sendSteeringCommand(socket: SocketType, cmd: Twist) = sockets[socket]?.send(cmd)
+
+    /**
+     * Sends steering command to the WebSocket server
+     * @param cmd steering command corresponding to ROS geometry_msgs/Twist message type
+     */
+    suspend fun sendSteeringCommand(cmd: Twist) = sockets[SocketType.STEERING]?.send(cmd)
 }
