@@ -41,7 +41,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 // If new IP address was entered
                 if (etSetIpAddress.text.toString().isNotEmpty()) {
                     // If new IP address is valid (for IPv4 protocol)
-                    if (viewModel.setIpAddress(etSetIpAddress.text.toString())) {
+                    if (viewModel.setIpAddress(etSetIpAddress.text.toString().trim())) {
                         // Disconnect all sockets and set new IP address for each one of them
                         viewModel.disconnectAllSockets()
                         for (socket in SocketType.entries) {
@@ -58,7 +58,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 // If new camera image port number was entered
                 if (etSetCameraPort.text.toString().isNotEmpty()) {
                     // If port number is valid
-                    if (viewModel.setSocketPort(SocketType.CAMERA_IMAGE, etSetCameraPort.text.toString())) {
+                    if (viewModel.setSocketPort(SocketType.CAMERA_IMAGE, etSetCameraPort.text.toString().trim())) {
                         setSocketsIpAddress(SocketType.CAMERA_IMAGE)
 
                         Snackbar.make(view, "Camera socket port set to ${etSetCameraPort.text}", Snackbar.LENGTH_LONG).show()
@@ -71,7 +71,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 // If new detected objects port was entered
                 if (etSetDetectedObjectsPort.text.toString().isNotEmpty()) {
                     // If port number is valid
-                    if (viewModel.setSocketPort(SocketType.DETECTED_OBJECTS, etSetDetectedObjectsPort.text.toString())) {
+                    if (viewModel.setSocketPort(SocketType.DETECTED_OBJECTS, etSetDetectedObjectsPort.text.toString().trim())) {
                         setSocketsIpAddress(SocketType.DETECTED_OBJECTS)
 
                         Snackbar.make(view, "Detected objects socket port set to ${etSetDetectedObjectsPort.text}", Snackbar.LENGTH_LONG).show()
@@ -84,7 +84,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 // If new steering port was entered
                 if (etSetSteeringPort.text.toString().isNotEmpty()) {
                     // If port number is valid
-                    if (viewModel.setSocketPort(SocketType.STEERING, etSetSteeringPort.text.toString())) {
+                    if (viewModel.setSocketPort(SocketType.STEERING, etSetSteeringPort.text.toString().trim())) {
                         setSocketsIpAddress(SocketType.STEERING)
 
                         Snackbar.make(view, "Steering socket port set to ${etSetSteeringPort.text}", Snackbar.LENGTH_LONG).show()

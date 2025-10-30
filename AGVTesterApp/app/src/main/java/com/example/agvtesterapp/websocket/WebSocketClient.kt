@@ -40,9 +40,9 @@ import java.util.concurrent.TimeUnit
 ) {
     companion object {
         /**
-         * Default IP address ("ws" prefix to inform that it is WebSocket server)
+         * Default IP address
          */
-        const val IP_ADDRESS = "ws://192.168.45.28"
+        const val IP_ADDRESS = "192.168.45.28"
 
         /**
          * Default camera image socket port
