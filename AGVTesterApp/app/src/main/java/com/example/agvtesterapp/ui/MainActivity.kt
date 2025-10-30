@@ -18,11 +18,6 @@ import com.example.agvtesterapp.websocket.WebSocketClient
  */
 class MainActivity : AppCompatActivity() {
 
-    /*
-        Things to add:
-        - Logs + tag
-     */
-
     /**
      * View Binding object - allows to safely access view
      */

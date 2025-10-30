@@ -28,51 +28,117 @@ import kotlinx.coroutines.plus
 import java.util.concurrent.TimeUnit
 
 /**
- * 
+ * Class containing WebSocket client's data and methods necessary for managing
+ * client's communication with server (e.g. establishing connection with server,
+ * receiving data from server, sending messages to server)
+ * @param url server IP address (IPv4 protocol)
+ * @param socketStatus reference to container holding connection status with server
  */
  class WebSocketClient(
      private var url: String? = null,
      private var socketStatus: MutableLiveData<ConnectionStatus>? = null
 ) {
     companion object {
+        /**
+         * Default IP address ("ws" prefix to inform that it is WebSocket server)
+         */
         const val IP_ADDRESS = "ws://192.168.45.28"
+
+        /**
+         * Default camera image socket port
+         */
         const val CAMERA_SOCKET_PORT = "7891"
+
+        /**
+         * Default detected objects socket port
+         */
         const val OBJECTS_SOCKET_PORT = "7892"
+
+        /**
+         * Default steering socket port
+         */
         const val STEERING_SOCKET_PORT = "7893"
+
+        /**
+         * Tag for WebSocket related logs
+         */
         const val WEBSOCKET_TAG = "WEBSOCKET_TAG"
+
+        /**
+         * Default WebSocket ping interval
+         */
         const val PING_INTERVAL = 10_000L   // 10s
+
+        /**
+         * Default delay period between reconnection attempts
+         */
         const val RECONNECT_DELAY = 5_000L
+
+        /**
+         * Default number of reconnection attempts
+         */
         const val RECONNECTION_ATTEMPTS = 3
     }
 
+    /**
+     * WebSocket HTTP client object that maintains a heartbeat connection with server
+     * It uses Ktor [HttpClient] based on the [OkHttp] engine (the network layer)
+     */
     private val client = HttpClient(OkHttp) {
         engine {
             config {
+                // Configures the WebSocket ping interval
+                // Client automatically sends a “ping” frame to the server every
+                // PING_INTERVAL milliseconds to keep the connection alive and detect timeouts
                 pingInterval(PING_INTERVAL, TimeUnit.MILLISECONDS)
             }
         }
-
+        // Enables logging for all HTTP/WebSocket activity
         install(Logging)
+        // Installs the WebSocket feature so this client can open and manage WebSocket sessions
         install(WebSockets)
     }
 
+    /**
+     * Scope in which coroutine responsible for running
+     * client's communication with server is launched
+     */
     private val scope = CoroutineScope(Dispatchers.IO) + SupervisorJob() +
             CoroutineExceptionHandler { _, throwable ->
-                Log.d(WEBSOCKET_TAG, "Error: ${throwable.message}")
+                Log.e(WEBSOCKET_TAG, "Error: ${throwable.message}")
             }
 
+    /**
+     * Coroutine object in which client's communication with server is managed
+     */
     private var job: Job? = null
 
+    /**
+     * WebSocket session object
+     * (holds the active WebSocket connection once it’s established)
+     */
     private var session: WebSocketSession? = null
 
+    /**
+     * Class containing methods called upon designated WebSocket client's events
+     */
     private val listener: WebSocketEvents = WebSocketDefaultEvents()
 
+    /**
+     * Counter of client's connection attempts to server
+     */
     private var connectionAttempts = 0
 
+
+    /**
+     * Listens for incoming messages from the server and passes them to the specified container
+     * @param socketType socket type
+     * @param dataReceiver reference to the container for data received from server
+     */
     private suspend fun <T> listenForMessages(socketType: SocketType, dataReceiver: MutableLiveData<T>? = null) {
 
         if (dataReceiver != null) {
-
+            // Based on socket type, a different listener method for managing incoming data is chosen
             val onReceive: ((String, MutableLiveData<T>) -> Unit)? = when (socketType) {
                 SocketType.CAMERA_IMAGE -> listener::onReceiveCameraImage
                 SocketType.DETECTED_OBJECTS -> listener::onReceiveDetectedObject
@@ -80,41 +146,51 @@ import java.util.concurrent.TimeUnit
             }
 
             try {
-                session?.incoming
-                    ?.receiveAsFlow()
-                    ?.filterIsInstance<Frame.Text>()
-                    ?.collect { data ->
+                session?.incoming   // Channel receiving all incoming messages from the server
+                    ?.receiveAsFlow()   // Converts the incoming stream into a Flow, enabling coroutine-based collection
+                    ?.filterIsInstance<Frame.Text>()    // Ignores binary/ping/pong frames and processes only text frames
+                    ?.collect { data ->     // Runs continuously until the flow ends (i.e., server closes connection)
                         val message = data.readText()
                         onReceive?.invoke(message, dataReceiver)
-                        Log.d(WEBSOCKET_TAG, "Raw message: $message")
                     }
 
-                // Flow finished normally (server closed connection gracefully)
+                // Flow finished normally (server closed connection)
                 socketStatus?.let { listener.onDisconnected(it, "Server closed connection") }
             }
             catch (e: Exception) {
-                // Exception usually means server disconnected unexpectedly
+                // Server disconnected unexpectedly
                 Log.e(WEBSOCKET_TAG, "WebSocket error: ${e.message}")
                 socketStatus?.let { listener.onDisconnected(it, "Server disconnected: ${e.message}") }
             }
             finally {
-                Log.d(WEBSOCKET_TAG, "WebSocket listener stopped")
+                Log.i(WEBSOCKET_TAG, "WebSocket listener stopped")
             }
         }
     }
 
+    /**
+     * Sets IP address of the server to which client is connection to
+     * @param address IP address (IPv4 protocol)
+     */
     fun setIpAddress(address: String) {
         url = address
     }
 
+    /**
+     * Assigns reference to container holding connection status with server
+     * @param receiver reference to container holding connection status with server
+     */
     fun setConnectionStatusReceiver(receiver: MutableLiveData<ConnectionStatus>) {
         socketStatus = receiver
     }
 
+    /**
+     * Connects WebSocket client to the WebSocket server specified by client's IP address
+     * @param socketType socket type
+     * @param dataReceiver reference to the container for data received from server
+     */
     suspend fun <T> connect(socketType: SocketType, dataReceiver: MutableLiveData<T>? = null) {
         try {
-            Log.d(WEBSOCKET_TAG,"Connecting to websocket at $url...")
-
             if (url != null) {
                 session = client.webSocketSession(url!!)
 
@@ -122,9 +198,10 @@ import java.util.concurrent.TimeUnit
                     listener.onConnected(socketStatus!!)
 
                 connectionAttempts = 0
-                Log.d(WEBSOCKET_TAG,"Connected to websocket at $url")
+                Log.i(WEBSOCKET_TAG,"Connected to WebSocket server at $url")
 
                 if (dataReceiver != null) {
+                    // Launches coroutine and listens for messages continuously
                     scope.launch {
                         listenForMessages(socketType, dataReceiver)
                     }
@@ -133,22 +210,27 @@ import java.util.concurrent.TimeUnit
 
 
         } catch (e: Exception) {
-            // ... handle errors and reconnect
+            // Handle errors and reconnect
             if(socketStatus != null)
                 listener.onDisconnected(socketStatus!!, e.message ?: "Unknown error")
 
-            Log.d(WEBSOCKET_TAG,"Error: ${e.message}")
+            Log.e(WEBSOCKET_TAG,"Error: ${e.message}")
             connectionAttempts++
             reconnect(socketType, dataReceiver)
         }
     }
 
+    /**
+     * Reconnects WebSocket client to the WebSocket server specified by client's IP address
+     * @param socketType socket type
+     * @param dataReceiver reference to the container for data received from server
+     */
     suspend fun <T> reconnect(socketType: SocketType, dataReceiver: MutableLiveData<T>? = null) {
+        // Cancel the coroutine in which client connection is running
         job?.cancel()
 
-        Log.d(WEBSOCKET_TAG,"Reconnecting to websocket in ${RECONNECT_DELAY}ms...")
-
         if(connectionAttempts <= RECONNECTION_ATTEMPTS) {
+            // Launch new coroutine in which client communication with server will be managed
             job = scope.launch {
                 disconnect()
                 delay(RECONNECT_DELAY)
@@ -159,27 +241,32 @@ import java.util.concurrent.TimeUnit
             connectionAttempts = 0
     }
 
+    /**
+     * Disconnects WebSocket client from WebSocket server
+     */
     suspend fun disconnect() {
-        Log.d(WEBSOCKET_TAG,"Closing websocket session...")
-
         session?.close()
         session = null
+        Log.i(WEBSOCKET_TAG,"WebSocket session closed")
 
         if(socketStatus != null)
             listener.onDisconnected(socketStatus!!, "Disconnected successfully")
     }
 
+    /**
+     * Sends steering command to the WebSocket server
+     * @param cmd steering command corresponding to ROS geometry_msgs/Twist message type
+     */
     suspend fun send(cmd: Twist) {
         try {
+            // Parse Twist message to JSON format
             val jsonString = Gson().toJson(cmd)
 
-            Log.d(WEBSOCKET_TAG, "Sending message: $jsonString")
-
-            // Send JSON string to WebSocket server
+            // Send JSON message to WebSocket server
             session?.send(Frame.Text(jsonString))
 
         } catch (e: Exception) {
-            Log.e(WEBSOCKET_TAG, "Error while sending Twist: ${e.message}")
+            Log.e(WEBSOCKET_TAG, "Error while sending steering command: ${e.message}")
         }
     }
 }

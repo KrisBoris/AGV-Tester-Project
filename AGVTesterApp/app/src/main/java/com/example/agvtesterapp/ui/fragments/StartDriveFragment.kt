@@ -55,15 +55,15 @@ class StartDriveFragment : Fragment(R.layout.fragment_start_drive) {
             }
 
             btnConnectAllSockets.setOnClickListener {
-                viewModel.disconnectAllSockets()
-                viewModel.connectSocket(SocketType.CAMERA_IMAGE, viewModel.cameraImage)
-                viewModel.connectSocket(SocketType.DETECTED_OBJECTS, viewModel.detectedObjects)
-                viewModel.connectSocket(SocketType.STEERING, MutableLiveData(Int))  // Steering socket doesn't receive any data
+                connectAllSockets()
             }
             btnDisconnectAllSockets.setOnClickListener {
                 viewModel.disconnectAllSockets()
+                // Clears data received while sockets were connected
+                viewModel.clearWebsocketDataContainers()
             }
             btnStartDrive.setOnClickListener {
+                connectAllSockets()
                 // Navigate to the steering panel
                 findNavController().navigate(R.id.action_startDriveFragment_to_steeringPanelFragment)
             }
@@ -93,5 +93,15 @@ class StartDriveFragment : Fragment(R.layout.fragment_start_drive) {
                 }
             }
         }
+    }
+
+    /**
+     * Connects all WebSocket clients to respective WebSocket servers
+     */
+    private fun connectAllSockets() {
+        viewModel.disconnectAllSockets()
+        viewModel.connectSocket(SocketType.CAMERA_IMAGE, viewModel.cameraImage)
+        viewModel.connectSocket(SocketType.DETECTED_OBJECTS, viewModel.detectedObjects)
+        viewModel.connectSocket(SocketType.STEERING, MutableLiveData(Int))  // Steering socket doesn't receive any data
     }
 }

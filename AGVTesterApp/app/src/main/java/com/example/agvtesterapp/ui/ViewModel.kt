@@ -21,6 +21,13 @@ import org.apache.commons.validator.routines.InetAddressValidator
  */
 class ViewModel(app: Application, val repository: Repository): AndroidViewModel(app) {
 
+    companion object {
+        /**
+         * Tag for application related logs
+         */
+        const val APP_TAG = "APP_TAG"
+    }
+
     /**
      * Shared preferences file key
      */
@@ -120,6 +127,20 @@ class ViewModel(app: Application, val repository: Repository): AndroidViewModel(
     private fun putSharedPrefsString(key: String, value: String) =
         repository.putSharedPrefsString(shared_prefs, key, value)
 
+
+    /**
+     * Clears all containers for data received from WebSocket servers
+     */
+    fun clearWebsocketDataContainers() {
+        // Clears the list of detected objects
+        detectedObjects.value?.clear()
+        detectedObjects.postValue(mutableListOf())
+
+        // Creates empty bitmap (blank image)
+        val emptyBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+        // Clears the last received camera image
+        cameraImage.postValue(emptyBitmap)
+    }
 
     /**
      * @return WebSocket server IP address

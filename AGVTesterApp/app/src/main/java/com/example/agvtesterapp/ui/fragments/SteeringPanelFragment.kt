@@ -16,7 +16,6 @@ import com.example.agvtesterapp.models.Twist
 import com.example.agvtesterapp.models.Vector3
 import com.example.agvtesterapp.ui.MainActivity
 import com.example.agvtesterapp.ui.ViewModel
-import com.example.agvtesterapp.websocket.WebSocketClient
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -69,7 +68,7 @@ class SteeringPanelFragment : Fragment(R.layout.fragment_steering_panel) {
 
             // Coroutine scope used for IO operations
             val scope = CoroutineScope(Dispatchers.IO) + SupervisorJob() + CoroutineExceptionHandler {_, throwable ->
-                Log.d(WebSocketClient.WEBSOCKET_TAG, "Error: ${throwable.message}")}
+                Log.e(ViewModel.APP_TAG, "Error: ${throwable.message}")}
 
             // Whenever new image is received from WebSocket server and saved to the container
             // is will be displayed in the ImageView object
@@ -83,16 +82,13 @@ class SteeringPanelFragment : Fragment(R.layout.fragment_steering_panel) {
             setButtonOnTouchListener(btnRight, scope, rightTurnVelocity)
 
             btnFinish.setOnClickListener {
-                // Saves all objects detected during drive to the database
-                moveObjectsToDatabase()
-                findNavController().popBackStack()
+                cleanupAndLeave()
             }
         }
 
+        // Called when the back button is pressed
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            // Called when the back button is pressed
-            moveObjectsToDatabase()
-            findNavController().popBackStack()
+            cleanupAndLeave()
         }
     }
 
@@ -159,5 +155,19 @@ class SteeringPanelFragment : Fragment(R.layout.fragment_steering_panel) {
             // Clear all detected objects from viewModel MutableList
             viewModel.detectedObjects.value?.clear()
         }
+    }
+
+    /**
+     * Performs operations required before leaving the view:
+     * disconnects all sockets, saves all detected objects in database,
+     * clears WebSocket data containers and returns to the previous view
+     */
+    private fun cleanupAndLeave() {
+        // Disconnects all sockets to no longer receive data from them
+        viewModel.disconnectAllSockets()
+        // Saves all objects detected during drive to the database
+        moveObjectsToDatabase()
+        viewModel.clearWebsocketDataContainers()
+        findNavController().popBackStack()
     }
 }
