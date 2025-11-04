@@ -14,7 +14,7 @@ class WebsocketSrvClientTesterNode:
 
         rospy.init_node("ws_camera_image_receiver_tester")
 
-        self.__ws_srv_address = rospy.get_param("~ws_srv_address", "192.168.45.107")
+        self.__ws_srv_address = rospy.get_param("~ws_srv_address", "192.168.45.15")
         self.__ws_srv_port = rospy.get_param("~ws_srv_port", 7891)
         self.__ws_srv_full_address = "ws://" + self.__ws_srv_address + ":" + str(self.__ws_srv_port)        
 
@@ -24,7 +24,7 @@ class WebsocketSrvClientTesterNode:
     async def messages_receiver(self):
         """ Connects to the server and receives messages sent by it. """
         
-        rospy.loginfo("Connectiing to the server")
+        rospy.loginfo("Connecting to the server")
         async with websockets.connect(self.__ws_srv_full_address) as websocket:
             rospy.loginfo("Connection successful")
             while not rospy.is_shutdown():

@@ -1,7 +1,13 @@
 <launch>
 
-    <include file="$(find jetracer)/launch/csi_camera.launch"/>
+    <!-- Launches jetracer's node that captures camera image -->
+    <include file="$(find jetracer)/launch/csi_camera.launch"/>        
 
+    <!-- Launches throttle node that reduces the number of frames received from camera -->
+    <node pkg="topic_tools" type="throttle" name="image_throttle"
+        args="messages /csi_cam_0/image_raw/compressed 20.0 /throttle/image_compressed" />
+
+    <!-- Launches WebSocket server node -->
     <node pkg="websocket_servers" type="ws_srv_camera_image_sender.py" name="ws_srv_camera_image_sender">
         <rosparam command="load" file="$(find agv_tester_bringup)/config/camera_image_sender.yaml"/>
     </node>

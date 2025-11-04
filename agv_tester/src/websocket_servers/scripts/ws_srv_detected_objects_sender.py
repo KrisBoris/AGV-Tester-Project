@@ -17,14 +17,20 @@ class WsSrvDetectedObjectsReceiverNode:
 
         rospy.init_node("ws_srv_detected_objects_receiver")
 
+        # Topic from which detected objects list is received
         self.__detected_objects_topic = rospy.get_param("~detected_objects_topic", "/darknet_ros/bounding_boxes")
+        # Queue (buffer) size for received detected objects
         self.__detected_objects_queue_size = rospy.get_param("~detected_objects_queue_size", 1)
+        # Subscriber to the topic where detected objects list is published
         self.__subscriber = rospy.Subscriber(self.__detected_objects_topic, BoundingBoxes,
             self.callback_detected_objects, queue_size=self.__detected_objects_queue_size)
-        self.__detected_object_probality_threshold = rospy.get_param("~detected_object_probality_threshold", 0.7)
+        # Probability threshold - detected objects with recognition probability below it won't be sent to the WebSocket client
+        self.__detected_object_probability_threshold = rospy.get_param("~detected_object_probality_threshold", 0.7)
 
-        self.__ws_srv_address = rospy.get_param("~ws_srv_address", "0.0.0.0")
-        self.__ws_srv_port = rospy.get_param("~ws_srv_port", 7890)
+        # WebSocket server IP address
+        self.__ws_srv_address = rospy.get_param("~ws_srv_address", "192.168.45.15")
+        # WebSocket server port
+        self.__ws_srv_port = rospy.get_param("~ws_srv_port", 7892)
         # Reference to the currently connected WebSocket client
         self.__connected_client = None        
         
@@ -34,7 +40,6 @@ class WsSrvDetectedObjectsReceiverNode:
         self.__ws_srv_loop = asyncio.new_event_loop()
 
         rospy.loginfo("ws_srv_detected_objects_receiver node has been created")          
-
     
     def callback_detected_objects(self, received_objects):  
         """ Runs coroutine in the seperate thread 
@@ -42,7 +47,6 @@ class WsSrvDetectedObjectsReceiverNode:
 
         asyncio.run_coroutine_threadsafe(self.send_to_client(received_objects), self.__detected_objects_sending_loop)
        
-
     async def process_client_connection(self, websocket, path):
         """ Establishes connection with only the first client. """
 
@@ -50,9 +54,9 @@ class WsSrvDetectedObjectsReceiverNode:
             rospy.loginfo("Rejecting new client: one already connected.")
             await websocket.close(code=1000, reason="Only one client allowed.")
             return
-
-        rospy.loginfo("Client connected.")
+        
         self.__connected_client = websocket
+        rospy.loginfo("Client connected.")
 
         try:            
             await websocket.wait_closed()
@@ -71,10 +75,12 @@ class WsSrvDetectedObjectsReceiverNode:
             try:  
                 detected_objects_names_count = {}
                 
+                # For every detected object on the received list
                 for det_obj in received_objects.bounding_boxes:
                     
-                    if det_obj.probability > self.__detected_object_probality_threshold:                    
+                    if det_obj.probability > self.__detected_object_probability_threshold:                    
                        
+                        # If current detected object is already on the list
                         if det_obj.Class in detected_objects_names_count:
                             # Increment object's counter
                             detected_objects_names_count[det_obj.Class] = detected_objects_names_count[det_obj.Class] + 1
@@ -115,6 +121,7 @@ class WsSrvDetectedObjectsReceiverNode:
         
 if __name__ == "__main__":       
     server = WsSrvDetectedObjectsReceiverNode()
+    # Runs image receiving loop and WebSocket server loop in separate threads
     threading.Thread(target=server.start_objects_receiving_loop, daemon=True).start()
     threading.Thread(target=server.start_ws_srv_loop, daemon=True).start()
     rospy.spin()    

@@ -1,4 +1,4 @@
 drive_control_topic: "/cmd_vel"
 drive_control_queue_size: 1
-ws_srv_address: "192.168.45.107"
+ws_srv_address: "192.168.45.28"
 ws_srv_port: 7893

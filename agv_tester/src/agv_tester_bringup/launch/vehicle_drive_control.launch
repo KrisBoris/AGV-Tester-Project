@@ -1,7 +1,9 @@
 <launch>
 
+    <!-- Launches jetracer's nodes that control vehicle's movement -->
     <include file="$(find jetracer)/launch/jetracer.launch"/>
 
+    <!-- Lanches WebSocket server node -->
     <node pkg="websocket_servers" type="ws_srv_vehicle_drive_control.py" name="ws_srv_vehicle_drive_control">
         <rosparam command="load" file="$(find agv_tester_bringup)/config/vehicle_drive_control.yaml"/>
     </node>

@@ -14,7 +14,7 @@ class WebsocketSrvClientTesterNode:
         
         rospy.init_node("ws_detected_objects_receiver_tester")
 
-        self.__ws_srv_address = rospy.get_param("~ws_srv_address", "192.168.45.107")
+        self.__ws_srv_address = rospy.get_param("~ws_srv_address", "192.168.45.15")
         self.__ws_srv_port = rospy.get_param("~ws_srv_port", 7892)
         self.__ws_srv_full_address = "ws://" + self.__ws_srv_address + ":" + str(self.__ws_srv_port)
 

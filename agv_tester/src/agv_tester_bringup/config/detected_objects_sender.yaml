@@ -1,5 +1,5 @@
 detected_objects_topic: "/darknet_ros/bounding_boxes"
 detected_objects_queue_size: 1
 detected_object_probality_threshold: 0.7
-ws_srv_address: "192.168.45.107"
+ws_srv_address: "192.168.45.28"
 ws_srv_port: 7892

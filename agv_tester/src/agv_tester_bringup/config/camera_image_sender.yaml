@@ -1,4 +1,4 @@
-camera_image_topic: "/csi_cam_0/image_raw/compressed"
+camera_image_topic: "/throttle/image_compressed"
 camera_image_queue_size: 1
-ws_srv_address: "192.168.45.107"
+ws_srv_address: "192.168.45.28"
 ws_srv_port: 7891
